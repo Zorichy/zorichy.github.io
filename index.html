@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>CB Matrix</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0f;}
+  iframe{position:fixed;inset:0;width:100%;height:100%;border:none;}
+  #chooser{position:fixed;inset:0;background:#0a0a0f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:monospace;color:#c8d0e0;z-index:10;}
+  h1{font-size:1.1rem;color:#00ffc8;letter-spacing:.15em;}
+  .btn{padding:12px 28px;border:1px solid #2a2a3a;color:#c8d0e0;background:transparent;font-family:monospace;font-size:.8rem;cursor:pointer;border-radius:6px;text-transform:uppercase;letter-spacing:.08em;}
+  .btn:hover,.btn:active{border-color:#00ffc8;color:#00ffc8;}
+  .hint{font-size:.65rem;color:#555570;}
+</style>
+</head>
+<body>
+<div id="chooser">
+  <h1>&#9889; CB MATRIX</h1>
+  <button class="btn" onclick="load('desktop')">&#128441; Desktop</button>
+  <button class="btn" onclick="load('mobile')">&#128241; Mobile</button>
+  <div class="hint">Auto-detecting&#8230;</div>
+</div>
+<iframe id="frame" style="display:none" data-desktop="<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;>
+<title>Circuitbending Matrix</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&amp;family=Orbitron:wght@700;900&amp;display=swap');
+:root{--bg:#0a0a0f;--panel:#111118;--border:#2a2a3a;--accent:#00ffc8;--text:#c8d0e0;--dim:#555570;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;min-height:100vh;display:flex;flex-direction:column;}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0;gap:12px;flex-wrap:wrap;}
+header h1{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;letter-spacing:.15em;color:var(--accent);text-shadow:0 0 20px rgba(0,255,200,.4);}
+.info-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.ifield{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--dim);}
+.ifield label{text-transform:uppercase;letter-spacing:.08em;}
+.ifield input{background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:.7rem;width:110px;padding:2px 4px;outline:none;}
+.ifield input:focus{border-bottom-color:var(--accent);}
+.toolbar{display:flex;gap:5px;align-items:center;padding:6px 20px;border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0;flex-wrap:wrap;}
+.tsep{width:1px;height:20px;background:var(--border);margin:0 3px;}
+.tlbl{font-size:.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;}
+button{font-family:'Share Tech Mono',monospace;font-size:.67rem;padding:4px 9px;background:transparent;border:1px solid var(--border);color:var(--text);cursor:pointer;text-transform:uppercase;letter-spacing:.05em;transition:all .15s;}
+button:hover{border-color:var(--accent);color:var(--accent);}
+.bdanger{border-color:#ff4444!important;color:#ff4444!important;}
+.bdanger:hover{background:rgba(255,68,68,.12)!important;}
+select.ssel{font-family:'Share Tech Mono',monospace;font-size:.67rem;padding:4px 7px;background:#1a1a2e;border:1px solid var(--border);color:var(--text);cursor:pointer;outline:none;}
+select.ssel:focus{border-color:var(--accent);}
+.status{margin-left:auto;font-size:.67rem;color:var(--accent);min-width:220px;text-align:right;}
+.mwrap{flex:1;overflow:auto;padding:16px;display:flex;justify-content:center;align-items:flex-start;}
+.matrix{position:relative;background:#fff;border:2px solid #222;display:inline-block;}
+canvas.mc{position:absolute;top:0;left:0;}
+.dn{position:absolute;transform:translate(-50%,-50%);cursor:crosshair;z-index:20;}
+.dn svg{display:block;}
+.slbl{position:absolute;font-family:'Orbitron',monospace;font-weight:700;font-size:13px;color:#111;pointer-events:none;white-space:nowrap;z-index:3;}
+.potc{position:absolute;border-radius:50%;border:2.5px solid #111;background:white;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-weight:700;color:#111;pointer-events:none;z-index:4;}
+.swb{position:absolute;border:2.5px solid #111;background:transparent;pointer-events:none;z-index:4;}
+.swl{position:absolute;font-family:'Orbitron',monospace;font-weight:700;font-size:11px;color:#111;pointer-events:none;z-index:5;text-align:center;white-space:nowrap;transform:translateX(-50%);}
+.pcbi{position:absolute;transform:translate(14px,-50%);background:transparent;border:none;border-bottom:1px solid #ccc;font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;color:#111;width:88px;outline:none;z-index:5;padding:0 2px;}
+.pcbi:focus{border-bottom-color:#0066cc;}
+/* PCB lock toggle */
+#pcb-lock-btn{background:none;border:none;cursor:pointer;padding:0 0 0 6px;vertical-align:middle;opacity:.5;transition:opacity .2s;display:inline-flex;align-items:center;}
+#pcb-lock-btn:hover{opacity:1;}
+#pcb-lock-btn svg{display:block;}
+/* PCB drag ghost */
+.pcbi.pcb-dragging{opacity:.25;pointer-events:none;}
+/* Drop zone — wide highlighted band with label */
+#pcb-drop-zone{position:absolute;pointer-events:none;display:none;z-index:30;}
+#pcb-drop-zone-line{position:absolute;height:2px;background:#00ffc8;border-radius:1px;box-shadow:0 0 8px rgba(0,255,200,.7);}
+#pcb-drop-zone-label{position:absolute;font-family:'Share Tech Mono',monospace;font-size:10px;color:#00ffc8;background:rgba(0,255,200,.1);border:1px solid rgba(0,255,200,.4);border-radius:3px;padding:1px 6px;white-space:nowrap;pointer-events:none;}
+/* Drag cursor on label when unlocked */
+.pcbi.pcb-draggable{cursor:grab;}
+.pcbi.pcb-draggable:active{cursor:grabbing;}
+.plbl{position:absolute;font-size:9px;font-weight:bold;color:#555;pointer-events:none;z-index:5;white-space:nowrap;font-family:'Share Tech Mono',monospace;}
+.pvi{position:absolute;background:transparent;border:none;border-bottom:1px dashed #aaa;font-family:'Share Tech Mono',monospace;font-size:10px;color:#333;width:92px;outline:none;text-align:center;z-index:6;padding:1px 2px;}
+.pvi:focus{border-bottom-color:#0066cc;}
+.pvi::placeholder{color:#bbb;}
+/* Net picker popup */
+#netpicker{display:none;position:fixed;z-index:10000;background:#111128;border:1px solid #00ffc8;border-radius:6px;min-width:180px;box-shadow:0 6px 28px rgba(0,255,200,.2);font-family:'Share Tech Mono',monospace;overflow:hidden;}
+#netpicker .nph{padding:7px 12px 5px;font-size:.62rem;color:#555570;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #2a2a3a;}
+.npitem{display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;font-size:.72rem;color:#c8d0e0;transition:background .1s;}
+.npitem:hover{background:#1a2a3a;}
+.npitem:empty-lbl{padding:6px 12px;}
+.npswatch{width:16px;height:16px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.35);}
+/* Note panel */
+#npanel{display:none;position:fixed;z-index:9999;background:#1a1a2e;border:1px solid #00ffc8;border-radius:6px;padding:14px 16px;min-width:260px;box-shadow:0 6px 28px rgba(0,255,200,.2);font-family:'Share Tech Mono',monospace;font-size:.73rem;color:#c8d0e0;}
+#npanel h3{font-family:'Orbitron',monospace;font-size:.75rem;color:#00ffc8;margin-bottom:10px;letter-spacing:.1em;}
+#npanel textarea{width:100%;height:72px;background:#0d0d1a;border:1px solid #2a2a3a;color:#c8d0e0;font-family:'Share Tech Mono',monospace;font-size:.72rem;padding:6px 8px;resize:none;outline:none;border-radius:3px;margin-bottom:8px;}
+#npanel textarea:focus{border-color:#00ffc8;}
+/* Enter to save hint */
+#npanel .nhint{font-size:.6rem;color:#555570;margin-bottom:6px;text-align:right;}
+#npanel .nbtns{display:flex;gap:8px;justify-content:flex-end;}
+#npanel .nbtns button{font-size:.66rem;padding:3px 10px;}
+/* Tooltip */
+#ntt{display:none;position:fixed;z-index:10001;background:#1a1a2e;border:1px solid #a29bfe;border-radius:5px;padding:8px 12px;max-width:240px;font-family:'Share Tech Mono',monospace;font-size:.7rem;color:#c8d0e0;pointer-events:none;box-shadow:0 4px 18px rgba(162,155,254,.25);line-height:1.5;}
+.fbar{padding:5px 20px;border-top:1px solid var(--border);background:var(--panel);font-size:.62rem;color:var(--dim);display:flex;gap:12px;flex-shrink:0;flex-wrap:wrap;}
+@media print{body{background:#fff;} header,.toolbar,.fbar,#npanel,#ntt,#netpicker{display:none!important;} .mwrap{padding:0;} .matrix{border:2px solid #000;}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&amp;#9889; CIRCUITBENDING MATRIX</h1>
+  <div class=&quot;info-row&quot;>
+    <div class=&quot;ifield&quot;><label>Project</label><input id=&quot;fp&quot; placeholder=&quot;name&amp;hellip;&quot;></div>
+    <div class=&quot;ifield&quot;><label>Date</label><input id=&quot;fd&quot; placeholder=&quot;dd/mm/yy&quot;></div>
+    <div class=&quot;ifield&quot;><label>Rev</label><input id=&quot;fr&quot; placeholder=&quot;v1&quot; style=&quot;width:50px&quot;></div>
+  </div>
+</header>
+
+<div class=&quot;toolbar&quot;>
+  <span class=&quot;tlbl&quot;>Mode:</span>
+  <button id=&quot;btn-connect&quot;   onclick=&quot;setMode('connect')&quot;>Connect</button>
+  <button id=&quot;btn-highlight&quot; onclick=&quot;setMode('highlight')&quot;>Highlight</button>
+  <button id=&quot;btn-note&quot;      onclick=&quot;setMode('note')&quot;>&amp;#128221; Note</button>
+  <button id=&quot;btn-delete&quot;    onclick=&quot;setMode('delete')&quot;>Delete</button>
+  <button id=&quot;btn-recolor&quot;   onclick=&quot;setMode('recolor')&quot;>Recolor</button>
+  <div class=&quot;tsep&quot;></div>
+  <span class=&quot;tlbl&quot;>Style:</span>
+  <select class=&quot;ssel&quot; id=&quot;ls&quot; onchange=&quot;render()&quot;>
+    <option value=&quot;solid&quot;>Solid</option>
+    <option value=&quot;dashed&quot;>Dashed</option>
+    <option value=&quot;dotted&quot;>Dotted</option>
+    <option value=&quot;thick&quot;>Thick</option>
+    <option value=&quot;thin&quot;>Thin</option>
+  </select>
+  <div class=&quot;tsep&quot;></div>
+  <button onclick=&quot;undoLast()&quot;>&amp;#8617; Undo</button>
+  <button onclick=&quot;redoLast()&quot;>&amp;#8618; Redo</button>
+  <button class=&quot;bdanger&quot; onclick=&quot;clearAll()&quot;>Clear All</button>
+  <div class=&quot;tsep&quot;></div>
+  <button onclick=&quot;saveProject()&quot;>&amp;#128190; Save</button>
+  <span id=&quot;save-indicator&quot; style=&quot;display:none;font-size:.62rem;color:#f39c12;border:1px solid #f39c12;border-radius:3px;padding:2px 7px;letter-spacing:.05em;&quot;>UNSAVED</span>
+  <button onclick=&quot;document.getElementById('fi').click()&quot;>&amp;#128194; Load</button>
+  <button onclick=&quot;window.print()&quot;>&amp;#128424; Print</button>
+  <input type=&quot;file&quot; id=&quot;fi&quot; accept=&quot;.json&quot; style=&quot;display:none&quot; onchange=&quot;onLoad(event)&quot;>
+  <span class=&quot;status&quot; id=&quot;st&quot;>Click a dot to start a connection</span>
+</div>
+
+<div class=&quot;mwrap&quot;>
+  <div class=&quot;matrix&quot; id=&quot;matrix&quot;>
+    <canvas class=&quot;mc&quot; id=&quot;cb&quot; style=&quot;z-index:1;pointer-events:none;&quot;></canvas>
+    <canvas class=&quot;mc&quot; id=&quot;cf&quot; style=&quot;z-index:8;pointer-events:none;&quot;></canvas>
+    <canvas class=&quot;mc&quot; id=&quot;ci&quot; style=&quot;z-index:15;pointer-events:none;&quot;></canvas>
+  </div>
+</div>
+
+<div class=&quot;fbar&quot;>
+  <span>Connect: click dot &amp;bull; Highlight: click dot/line &amp;bull; Note/Delete/Recolor: click dot or line &amp;bull; Multi-net pins show a picker &amp;bull; Ctrl+Z/Y undo/redo</span>
+</div>
+
+<!-- Net picker popup -->
+<div id=&quot;netpicker&quot;>
+  <div class=&quot;nph&quot; id=&quot;nph-title&quot;>Choose net</div>
+  <div id=&quot;nph-items&quot;></div>
+</div>
+
+<!-- Note panel -->
+<div id=&quot;npanel&quot;>
+  <h3>CONNECTION NOTE</h3>
+  <div id=&quot;nclbl&quot; style=&quot;font-size:.65rem;color:#555570;margin-bottom:8px;&quot;></div>
+  <textarea id=&quot;ntxt&quot; placeholder=&quot;e.g. pitch CV, body contact&amp;hellip;&quot; onkeydown=&quot;if(event.key==='Enter'&amp;&amp;!event.shiftKey){event.preventDefault();saveNote();}&quot;></textarea>
+  <div class=&quot;nhint&quot;>Enter to save &amp;nbsp;|&amp;nbsp; Shift+Enter for new line</div>
+  <div class=&quot;nbtns&quot;>
+    <button onclick=&quot;closeNote()&quot;>Cancel</button>
+    <button onclick=&quot;saveNote()&quot; style=&quot;border-color:#00ffc8;color:#00ffc8;&quot;>Save</button>
+  </div>
+</div>
+<div id=&quot;ntt&quot;></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// LAYOUT
+// ═══════════════════════════════════════════════════════════════════
+const MW=1240,MH=840,SEC_H=26,CT=SEC_H+14,CB_Y=MH-12,CH=CB_Y-CT;
+const POT_DIV=Math.round(MW*.24),LEG_DIV=Math.round(MW*.77);
+const SW_LEFT=POT_DIV+28,SW_RIGHT=LEG_DIV-28,SW_W=46,SW_H=98;
+const sw_hg=Math.round((SW_RIGHT-SW_LEFT-3*SW_W)/4);
+const sw_vg=Math.round((CH-3*SW_H)/4);
+const sw_xs=[0,1,2].map(c=>SW_LEFT+sw_hg+c*(SW_W+sw_hg));
+const sw_ys=[0,1,2].map(r=>CT+sw_vg+r*(SW_H+sw_vg));
+const R=70,row_cy=sw_ys.map(y=>y+SW_H/2);
+const p1_cy=Math.round((row_cy[0]+row_cy[1])/2),p2_cy=Math.round((row_cy[1]+row_cy[2])/2);
+const POT_CX=Math.round(POT_DIV/2)+8,PIN_DYS=[-32,0,32];
+const LEG_DOT_X=LEG_DIV+24,N_LEG=16,leg_sp=Math.round(CH/(N_LEG+1));
+
+// ═══════════════════════════════════════════════════════════════════
+// ROUTING
+// ═══════════════════════════════════════════════════════════════════
+const VSLOTS=6;
+function buildVChans(){
+  const gaps=[[SW_LEFT+2,sw_xs[0]-2],[sw_xs[0]+SW_W+2,sw_xs[1]-2],[sw_xs[1]+SW_W+2,sw_xs[2]-2],[sw_xs[2]+SW_W+2,SW_RIGHT-2]];
+  const ch=[];
+  gaps.forEach(([x1,x2])=>{for(let s=0;s<VSLOTS;s++)ch.push(Math.round(x1+(x2-x1)*(s+0.5)/VSLOTS));});
+  return ch;
+}
+const VCHANS=buildVChans();
+
+// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// COLOR SYSTEM
+// Large palette of perceptually spaced colors.
+// pickBestColor() always returns the color most visually distinct
+// from all currently used net colors, so duplicates never happen.
+// ═══════════════════════════════════════════════════════════════════
+const FULL_PAL = [
+  '#e74c3c','#27ae60','#2980b9','#f39c12','#8e44ad','#16a085',
+  '#e67e22','#2471a3','#1abc9c','#e91e63','#d35400','#6c5ce7',
+  '#c0392b','#00b894','#0984e3','#a29bfe','#f1c40f','#00cec9',
+  '#fd79a8','#55efc4','#fdcb6e','#74b9ff','#fab1a0','#81ecec',
+  '#ff7675','#6ab04c','#22a6b3','#e55039','#badc58','#7ed6df',
+  '#eb4d4b','#686de0','#30336b','#f9ca24','#6ab04c','#c7ecee',
+  '#be2edd','#4834d4','#130f40','#30336b','#f0932b','#6ab04c',
+];
+
+// Convert hex to [r, g, b] 0-255
+function hexToRgb(hex){
+  return[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];
+}
+// Perceptual distance between two hex colors (weighted euclidean in RGB)
+function colorDist(a,b){
+  const [r1,g1,b1]=hexToRgb(a),[r2,g2,b2]=hexToRgb(b);
+  return Math.sqrt(2*(r1-r2)**2+4*(g1-g2)**2+3*(b1-b2)**2);
+}
+// Return the color from FULL_PAL that is most distinct from all currently used colors
+function pickBestColor(){
+  const used=Object.values(S.nets).map(n=>n.color);
+  if(!used.length) return FULL_PAL[0];
+  let bestColor=FULL_PAL[0], bestDist=-1;
+  for(const c of FULL_PAL){
+    // Skip colors already used
+    if(used.includes(c)) continue;
+    const minDist=Math.min(...used.map(u=>colorDist(c,u)));
+    if(minDist>bestDist){bestDist=minDist;bestColor=c;}
+  }
+  return bestColor;
+}
+// Stable color for a PCB index — assigned once, then stored in the net.
+// We don't use a fixed mapping anymore; instead we pick the best available
+// color at the moment the PCB net is first created.
+function pcbColor(pcbIdx){
+  // If a net for this pcbIdx already exists, return its color
+  const existing=Object.values(S.nets).find(n=>n.pcbIdx===pcbIdx);
+  if(existing) return existing.color;
+  return pickBestColor();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+let S=freshState();
+function freshState(){return{conns:[],nets:{},nc:0,notes:{},pcbLabels:Array(N_LEG).fill('')};}
+function cloneState(s){
+  return{conns:s.conns.map(c=>({...c})),
+    nets:Object.fromEntries(Object.entries(s.nets).map(([k,v])=>[k,{color:v.color,dots:new Set(v.dots),pcbIdx:v.pcbIdx}])),
+    nc:s.nc,notes:{...s.notes},
+    pcbLabels:[...s.pcbLabels]};
+}
+// Sync label inputs → state (call before any pushUndo that might affect labels)
+function syncLabelsToState(){S.pcbLabels=pcbInputs.map(inp=>inp.value);}
+// Sync state → label inputs (call after undo/redo)
+function syncLabelsFromState(){S.pcbLabels.forEach((v,i)=>{if(pcbInputs[i])pcbInputs[i].value=v;});}
+
+let undoStack=[],redoStack=[];
+function pushUndo(){syncLabelsToState();undoStack.push(cloneState(S));redoStack=[];if(undoStack.length>60)undoStack.shift();markDirty();}
+function undoLast(){if(!undoStack.length){st('Nothing to undo.');return;}syncLabelsToState();redoStack.push(cloneState(S));S=undoStack.pop();syncLabelsFromState();closePicker();if(sel){nodes[sel].el.classList.remove('sel');sel=null;}render();st('Undo!');}
+function redoLast(){if(!redoStack.length){st('Nothing to redo.');return;}syncLabelsToState();undoStack.push(cloneState(S));S=redoStack.pop();syncLabelsFromState();render();st('Redo!');}
+function clearAll(){pushUndo();S=freshState();syncLabelsFromState();hlNets.clear();closePicker();if(sel){nodes[sel].el.classList.remove('sel');sel=null;}render();st('Cleared.');}
+
+let sel=null,selNet=null,mode='connect',hlNets=new Set(),aNoteIdx=null,dpos=[];
+
+// ═══════════════════════════════════════════════════════════════════
+// CANVAS
+// ═══════════════════════════════════════════════════════════════════
+const mat=document.getElementById('matrix');
+const cB=document.getElementById('cb'),cF=document.getElementById('cf'),cI=document.getElementById('ci');
+const xB=cB.getContext('2d'),xF=cF.getContext('2d');
+[cB,cF,cI].forEach(c=>{c.width=MW;c.height=MH;});
+mat.style.width=MW+'px';mat.style.height=MH+'px';
+cI.style.cursor='default';
+
+// ═══════════════════════════════════════════════════════════════════
+// DOM
+// ═══════════════════════════════════════════════════════════════════
+const nodes={},potEx={},pcbInputs=[],pvInputs={};
+function makeDot(id,x,y,r){
+  r=r||6;const sz=r*2+8;
+  const w=document.createElement('div');w.className='dn';
+  w.style.cssText='left:'+x+'px;top:'+y+'px;width:'+sz+'px;height:'+sz+'px;';
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 '+sz+' '+sz);svg.style.cssText='width:'+sz+'px;height:'+sz+'px;';
+  // We'll draw the dot on canvas, just use svg for click target + selection glow ring
+  const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  c.setAttribute('cx',sz/2);c.setAttribute('cy',sz/2);c.setAttribute('r',r);
+  c.setAttribute('fill','transparent');c.setAttribute('stroke','none');
+  const ring=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  ring.setAttribute('cx',sz/2);ring.setAttribute('cy',sz/2);ring.setAttribute('r',r+2);
+  ring.setAttribute('fill','none');ring.setAttribute('stroke','none');ring.setAttribute('stroke-width','3');
+  svg.appendChild(c);svg.appendChild(ring);w.appendChild(svg);
+  w.addEventListener('click',ev=>{ev.stopPropagation();onDot(id,ev);});
+  mat.appendChild(w);
+  nodes[id]={x,y,el:w,hitCircle:c,ring,r,svg};
+}
+function addEl(tag,cls,sty,txt){
+  const e=document.createElement(tag);if(cls)e.className=cls;
+  if(sty)Object.assign(e.style,sty);if(txt!==undefined)e.textContent=txt;
+  mat.appendChild(e);return e;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LAYOUT BUILD
+// ═══════════════════════════════════════════════════════════════════
+addEl('div','slbl',{left:POT_DIV/2+'px',top:'5px',transform:'translateX(-50%)'},'POTENTIOMETERS');
+addEl('div','slbl',{left:(POT_DIV+LEG_DIV)/2+'px',top:'5px',transform:'translateX(-50%)'},'MTS-103 SWITCHES');
+
+// PCB label + lock button together
+const pcbHdr=document.createElement('div');
+pcbHdr.style.cssText='position:absolute;left:'+(LEG_DIV+(MW-LEG_DIV)/2)+'px;top:5px;transform:translateX(-50%);display:flex;align-items:center;gap:0;z-index:3;pointer-events:auto;';
+const pcbHdrTxt=document.createElement('span');
+pcbHdrTxt.className='slbl';
+pcbHdrTxt.style.cssText='position:relative;left:0;top:0;';
+pcbHdrTxt.textContent='PCB CONNECTIONS';
+const lockBtn=document.createElement('button');
+lockBtn.id='pcb-lock-btn';
+lockBtn.title='Lock/unlock PCB order';
+lockBtn.innerHTML=lockSvg(true);
+lockBtn.onclick=()=>togglePcbLock();
+
+function lockSvg(locked){
+  // Geometric lock/unlock icon matching the monospace aesthetic
+  if(locked){
+    return '<svg width=&quot;13&quot; height=&quot;15&quot; viewBox=&quot;0 0 13 15&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;>'
+      +'<rect x=&quot;1.5&quot; y=&quot;6.5&quot; width=&quot;10&quot; height=&quot;8&quot; rx=&quot;1&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; fill=&quot;none&quot;/>'
+      +'<path d=&quot;M3.5 6.5V4.5a3 3 0 0 1 6 0v2&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;square&quot; fill=&quot;none&quot;/>'
+      +'<circle cx=&quot;6.5&quot; cy=&quot;10.5&quot; r=&quot;1.2&quot; fill=&quot;currentColor&quot;/>'
+      +'<line x1=&quot;6.5&quot; y1=&quot;11.7&quot; x2=&quot;6.5&quot; y2=&quot;13&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;square&quot;/>'
+      +'</svg>';
+  } else {
+    return '<svg width=&quot;13&quot; height=&quot;15&quot; viewBox=&quot;0 0 13 15&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;>'
+      +'<rect x=&quot;1.5&quot; y=&quot;6.5&quot; width=&quot;10&quot; height=&quot;8&quot; rx=&quot;1&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; fill=&quot;none&quot;/>'
+      +'<path d=&quot;M3.5 6.5V4.5a3 3 0 0 1 6 0&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;square&quot; fill=&quot;none&quot;/>'
+      +'<circle cx=&quot;6.5&quot; cy=&quot;10.5&quot; r=&quot;1.2&quot; fill=&quot;currentColor&quot;/>'
+      +'<line x1=&quot;6.5&quot; y1=&quot;11.7&quot; x2=&quot;6.5&quot; y2=&quot;13&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;square&quot;/>'
+      +'</svg>';
+  }
+}
+pcbHdr.appendChild(pcbHdrTxt);
+pcbHdr.appendChild(lockBtn);
+mat.appendChild(pcbHdr);
+
+[{lbl:'P1',cy:p1_cy},{lbl:'P2',cy:p2_cy}].forEach(({lbl,cy})=>{
+  addEl('div','potc',{width:R*2+'px',height:R*2+'px',left:(POT_CX-R)+'px',top:(cy-R)+'px',fontSize:'16px'},lbl);
+  const vi=document.createElement('input');vi.className='pvi';vi.placeholder='e.g. 10k\u03A9 B';
+  vi.style.cssText='left:'+POT_CX+'px;top:'+(cy+R+6)+'px;transform:translateX(-50%);';
+  mat.appendChild(vi);pvInputs[lbl]=vi;
+  PIN_DYS.forEach((dy,i)=>{
+    const pn=i+1,ang=Math.atan2(dy,R),ex=Math.round(POT_CX+R*Math.cos(ang)),ey=cy+dy,stub=ex+54;
+    const nid=lbl.toLowerCase()+'-'+pn;potEx[nid]={x:ex,y:ey};
+    makeDot(nid,stub,ey,6);
+    addEl('div','plbl',{left:stub+'px',top:(ey-20)+'px',transform:'translateX(-50%)',textAlign:'center'},lbl+'.'+pn);
+  });
+});
+
+for(let i=0;i<9;i++){
+  const col=i%3,row=Math.floor(i/3),sx=sw_xs[col],sy=sw_ys[row];
+  addEl('div','swb',{width:SW_W+'px',height:SW_H+'px',left:sx+'px',top:sy+'px'});
+  addEl('div','swl',{left:(sx+SW_W/2)+'px',top:(sy-17)+'px'},'SW'+(i+1));
+  [0.18,0.50,0.82].forEach((f,pi)=>{
+    const px=sx+SW_W/2,py=sy+SW_H*f;
+    makeDot('sw'+(i+1)+'-'+(pi+1),px,py,6);
+    addEl('div','plbl',{left:(sx-13)+'px',top:(py-7)+'px'},pi+1);
+  });
+}
+
+// PCB connections — simple inputs, no wrappers
+for(let i=0;i<N_LEG;i++){
+  const ly=CT+leg_sp*(i+1);
+  makeDot('pcb-'+i,LEG_DOT_X,ly,7);
+  const inp=document.createElement('input');
+  inp.className='pcbi';
+  inp.id='pcbi-'+i;
+  inp.style.cssText='top:'+ly+'px;left:'+LEG_DOT_X+'px;';
+  inp.placeholder='label\u2026';
+  mat.appendChild(inp);
+  pcbInputs.push(inp);
+}
+
+// Drop zone (line + label)
+const dropZone=document.createElement('div');
+dropZone.id='pcb-drop-zone';
+const dropZoneLine=document.createElement('div');
+dropZoneLine.id='pcb-drop-zone-line';
+const dropZoneLbl=document.createElement('div');
+dropZoneLbl.id='pcb-drop-zone-label';
+dropZone.appendChild(dropZoneLine);
+dropZone.appendChild(dropZoneLbl);
+mat.appendChild(dropZone);
+
+// ── PCB LOCK &amp; DRAG ──────────────────────────────────────────────
+let pcbLocked=true;   // start locked
+let pcbDragIdx=null, pcbDropIdx=null;
+
+function togglePcbLock(){
+  pcbLocked=!pcbLocked;
+  document.getElementById('pcb-lock-btn').innerHTML=lockSvg(pcbLocked);
+  document.getElementById('pcb-lock-btn').style.color=pcbLocked?'':'#00ffc8';
+  pcbInputs.forEach(inp=>{
+    if(pcbLocked) inp.classList.remove('pcb-draggable');
+    else inp.classList.add('pcb-draggable');
+  });
+  st(pcbLocked?'PCB order locked.':'PCB order unlocked — drag labels to reorder.');
+}
+
+// Attach drag listeners to all PCB inputs
+pcbInputs.forEach((inp,i)=>{
+  inp.addEventListener('mousedown',e=>{
+    if(pcbLocked) return;
+    // Only start drag if not clicking to type (allow focus on click without drag)
+    // We use a small delay: if mouse moves before 150ms, it's a drag
+    const startX=e.clientX, startY=e.clientY;
+    let dragging=false;
+    function onMove(e2){
+      if(!dragging &amp;&amp; Math.hypot(e2.clientX-startX,e2.clientY-startY)>5){
+        dragging=true;
+        startDrag(i,e);
+        document.removeEventListener('mousemove',onMove);
+        document.removeEventListener('mouseup',onUp);
+      }
+    }
+    function onUp(){
+      document.removeEventListener('mousemove',onMove);
+      document.removeEventListener('mouseup',onUp);
+    }
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onUp);
+  });
+});
+
+function startDrag(idx,e){
+  pcbDragIdx=idx;
+  pcbInputs[idx].classList.add('pcb-dragging');
+  dropZone.style.display='block';
+  document.addEventListener('mousemove',onPcbDragMove);
+  document.addEventListener('mouseup',onPcbDragUp);
+}
+
+function onPcbDragMove(e){
+  if(pcbDragIdx===null) return;
+  const matR=mat.getBoundingClientRect();
+  const my=e.clientY-matR.top;
+  // Find insertion slot
+  let best=0, bestDist=Infinity;
+  for(let i=0;i<=N_LEG;i++){
+    const insertY=CT+leg_sp*i;
+    const d=Math.abs(my-insertY);
+    if(d<bestDist){bestDist=d;best=i;}
+  }
+  pcbDropIdx=best;
+
+  // Position the glowing line at the insertion point
+  const lineY=CT+leg_sp*pcbDropIdx;
+  const zoneLeft=LEG_DOT_X-22;
+  const zoneW=170;
+  dropZoneLine.style.cssText='left:'+zoneLeft+'px;top:'+(lineY-1)+'px;width:'+zoneW+'px;';
+
+  // Label: show what's being moved and where it lands
+  const dragLabel=pcbInputs[pcbDragIdx].value||'(unlabeled)';
+  dropZoneLbl.textContent='↕ '+dragLabel;
+  // Position label to the right of the line, vertically centred on it
+  dropZoneLbl.style.cssText='left:'+(zoneLeft+zoneW+6)+'px;top:'+(lineY-9)+'px;';
+}
+
+function onPcbDragUp(e){
+  document.removeEventListener('mousemove',onPcbDragMove);
+  document.removeEventListener('mouseup',onPcbDragUp);
+  dropZone.style.display='none';
+  const from=pcbDragIdx, to=pcbDropIdx;
+  if(pcbDragIdx!==null) pcbInputs[pcbDragIdx].classList.remove('pcb-dragging');
+  pcbDragIdx=null; pcbDropIdx=null;
+  if(from===null||to===null) return;
+  // 'to' is the insertion slot (0=before first, N_LEG=after last).
+  // Convert to a destination index in the array.
+  // Inserting at slot 'to' means the item ends up at index:
+  //   - if moving down (to > from+1): dest = to-1
+  //   - if moving up   (to <= from):  dest = to
+  // When to === from or to === from+1 the item doesn't move — EXCEPT
+  // when to === from exactly, which means &quot;insert just above myself&quot;,
+  // i.e. swap with the row above.
+  let dest;
+  if(to===from){
+    // Drop on own slot — swap with row above if possible
+    if(from===0) return;
+    dest=from-1;
+  } else if(to===from+1){
+    // Drop on slot just below own position — no movement
+    return;
+  } else if(to>from){
+    dest=to-1;
+  } else {
+    dest=to;
+  }
+  if(dest===from) return;
+  pushUndo();
+  reorderPcbRows(from,dest);
+}
+
+function reorderPcbRows(from,to){
+  // We swap CONTENT (labels + nets) between slots, keeping DOM fixed.
+  // Build current logical order as array of slot indices [0..N_LEG-1]
+  const order=Array.from({length:N_LEG},(_,i)=>i);
+  // Move item at 'from' to 'to'
+  const [moved]=order.splice(from,1);
+  order.splice(to,0,moved);
+
+  // Collect current state per slot
+  const labels=pcbInputs.map(inp=>inp.value);
+  const netsBySlot=pcbInputs.map((_,i)=>{
+    // Find all nets whose pcbIdx===i
+    return Object.entries(S.nets)
+      .filter(([,v])=>v.pcbIdx===i)
+      .map(([k])=>k);
+  });
+
+  // Apply new order: slot i gets content from order[i]
+  order.forEach((srcSlot,destSlot)=>{
+    pcbInputs[destSlot].value=labels[srcSlot];
+    // Update net pcbIdx: nets that were at srcSlot move to destSlot
+    netsBySlot[srcSlot].forEach(nid=>{
+      if(S.nets[nid]) S.nets[nid].pcbIdx=destSlot;
+    });
+    // Also update the dot connections: the dot 'pcb-destSlot' now represents
+    // what was previously srcSlot's content. Connections are tied to dotIds,
+    // so we need to swap which dotId the nets reference.
+  });
+
+  // Actually for connections: conns reference dotIds ('pcb-0' etc) which are
+  // physically fixed. So we need to swap the dotId memberships in nets too.
+  // Cleaner approach: swap everything by rebuilding net.dots for pcb slots.
+  // Collect dotId sets per slot before remapping
+  const dotSetsBySlot=Array.from({length:N_LEG},(_,i)=>{
+    const dotId='pcb-'+i;
+    // nets touching this dotId
+    return Object.entries(S.nets)
+      .filter(([,v])=>v.dots.has(dotId))
+      .map(([k])=>k);
+  });
+
+  // Now for each destSlot, the content came from srcSlot=order[destSlot]
+  // We need to move the dotId from srcSlot to destSlot in those nets.
+  // Build a remapping: oldDotId -> newDotId
+  // destSlot i gets content from order[i], so the dotId 'pcb-order[i]' should become 'pcb-i'
+  // But dotIds are fixed in DOM. So instead we swap pcbIdx and dots membership.
+  // Simplest: build new dots sets per net by applying the permutation.
+
+  // For each net with pcbIdx, find which dest slot it belongs to (already set above),
+  // and update its dots set: replace old pcb-X with pcb-(new slot).
+  const permutation={};  // srcSlot -> destSlot
+  order.forEach((src,dest)=>{permutation[src]=dest;});
+
+  Object.values(S.nets).forEach(net=>{
+    const newDots=new Set();
+    net.dots.forEach(dotId=>{
+      if(dotId.startsWith('pcb-')){
+        const oldSlot=parseInt(dotId.slice(4));
+        const newSlot=permutation[oldSlot];
+        newDots.add('pcb-'+newSlot);
+      } else {
+        newDots.add(dotId);
+      }
+    });
+    net.dots=newDots;
+  });
+
+  // Also remap conn from/to references for pcb dots
+  S.conns.forEach(c=>{
+    if(c.from.startsWith('pcb-')){
+      const old=parseInt(c.from.slice(4));
+      c.from='pcb-'+permutation[old];
+    }
+    if(c.to.startsWith('pcb-')){
+      const old=parseInt(c.to.slice(4));
+      c.to='pcb-'+permutation[old];
+    }
+  });
+
+  render();
+  st('PCB row moved.');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NET HELPERS
+// ═══════════════════════════════════════════════════════════════════
+function getNetsOf(id){
+  // Returns array of net ids that include this dot
+  return Object.keys(S.nets).filter(k=>S.nets[k].dots.has(id));
+}
+function getConnIdxsOf(id){
+  return S.conns.map((c,i)=>({c,i})).filter(({c})=>c.from===id||c.to===id);
+}
+function h2r(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return'rgba('+r+','+g+','+b+','+a+')';}
+function rebuildNet(nid){
+  if(!S.nets[nid])return;
+  const s=new Set();S.conns.forEach(c=>{if(c.net===nid){s.add(c.from);s.add(c.to);}});
+  S.nets[nid].dots=s;if(!s.size)delete S.nets[nid];
+}
+function pcbIdxOf(id){if(id.startsWith('pcb-'))return parseInt(id.slice(4));return -1;}
+
+// ═══════════════════════════════════════════════════════════════════
+// NET PICKER POPUP
+// ═══════════════════════════════════════════════════════════════════
+const picker=document.getElementById('netpicker');
+let pickerCb=null;
+function showPicker(title,items,px,py,cb){
+  // items: [{label, color, value}]
+  closePicker();
+  pickerCb=cb;
+  document.getElementById('nph-title').textContent=title;
+  const cont=document.getElementById('nph-items');cont.innerHTML='';
+  items.forEach(it=>{
+    const row=document.createElement('div');row.className='npitem';
+    const sw=document.createElement('div');sw.className='npswatch';sw.style.background=it.color||'#888';
+    row.appendChild(sw);
+    if(it.label){
+      const lbl=document.createElement('span');lbl.textContent=it.label;
+      lbl.style.cssText='font-size:.72rem;color:#c8d0e0;';
+      row.appendChild(lbl);
+    } else if(it.sublabel){
+      const sub=document.createElement('span');sub.textContent=it.sublabel;
+      sub.style.cssText='font-size:.62rem;color:#555570;font-style:italic;letter-spacing:.04em;';
+      row.appendChild(sub);
+    }
+    row.addEventListener('click',()=>{closePicker();cb(it.value);});
+    cont.appendChild(row);
+  });
+  const pw=200,ph=items.length*36+36;
+  const left=Math.min(px+8,window.innerWidth-pw-10),top=Math.min(py+8,window.innerHeight-ph-10);
+  picker.style.cssText='display:block;left:'+left+'px;top:'+top+'px;';
+  setTimeout(()=>document.addEventListener('click',pickerOutside),100);
+}
+function pickerOutside(e){if(!picker.contains(e.target)){closePicker();}}
+function closePicker(){picker.style.display='none';pickerCb=null;document.removeEventListener('click',pickerOutside);}
+
+// Build picker items from a list of net ids for a given dot
+function netItems(dotId,netIds){
+  return netIds.map(nid=>{
+    const net=S.nets[nid];
+    let label='', sublabel='';
+    if(net &amp;&amp; net.pcbIdx>=0){
+      const pcbLabel=pcbInputs[net.pcbIdx]?.value.trim();
+      label = pcbLabel || '';
+      sublabel = '';
+    } else {
+      label = '';
+      sublabel = 'no PCB';
+    }
+    return{label, sublabel, color:net?net.color:'#888', value:nid};
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DOT CLICK
+// ═══════════════════════════════════════════════════════════════════
+function onDot(id,ev){
+  closePicker();
+  const px=ev.clientX,py=ev.clientY;
+
+  if(mode==='highlight'){
+    const nets=getNetsOf(id);
+    if(!nets.length){st('No connections here.');return;}
+    if(nets.length===1){
+      if(hlNets.has(nets[0]))hlNets.delete(nets[0]);else hlNets.add(nets[0]);
+      render();st('Highlighted.');return;
+    }
+    const items=[{label:'All nets on this pin',color:'#00ffc8',value:'__all__'},...netItems(id,nets)];
+    showPicker('Highlight net',items,px,py,val=>{
+      if(val==='__all__'){const allHL=nets.every(n=>hlNets.has(n));nets.forEach(n=>allHL?hlNets.delete(n):hlNets.add(n));}
+      else{if(hlNets.has(val))hlNets.delete(val);else hlNets.add(val);}
+      render();
+    });return;
+  }
+
+  if(mode==='delete'){
+    const cidxs=getConnIdxsOf(id);
+    if(!cidxs.length){st('No connections here.');return;}
+    if(cidxs.length===1){doDelete(cidxs[0].i);return;}
+    const items=cidxs.map(({c,i})=>{
+      const other=c.from===id?c.to:c.from;const net=S.nets[c.net];
+      return{label:other,color:net?net.color:'#888',value:i};
+    });
+    showPicker('Delete which?',items,px,py,val=>doDelete(val));return;
+  }
+
+  if(mode==='note'){
+    const cidxs=getConnIdxsOf(id);
+    if(!cidxs.length){st('No connections here.');return;}
+    if(cidxs.length===1){openNote(cidxs[0].i,px,py);return;}
+    const items=cidxs.map(({c,i})=>{
+      const other=c.from===id?c.to:c.from;const net=S.nets[c.net];
+      return{label:other,color:net?net.color:'#888',value:i};
+    });
+    showPicker('Note which connection?',items,px,py,val=>openNote(val,px,py));return;
+  }
+
+  if(mode==='recolor'){
+    const nets=getNetsOf(id);
+    if(!nets.length){st('No connections here.');return;}
+    if(nets.length===1){doRecolor(nets[0],px,py);return;}
+    const items=netItems(id,nets);
+    showPicker('Recolor which net?',items,px,py,val=>doRecolor(val,px,py));return;
+  }
+
+  // Connect mode
+  if(!sel){
+    sel=id; selNet=null;
+    const existingNets=getNetsOf(id);
+    if(existingNets.length>1){
+      // Multiple nets already on this pin — ask which to continue
+      const items=[
+        {label:'New separate net (new color)',color:'#00ffc8',value:'__new__'},
+        ...netItems(id,existingNets)
+      ];
+      showPicker('Continue which net?',items,px,py,val=>{
+        selNet=(val==='__new__')?'__new__':val;
+        nodes[id].el.classList.add('sel');
+        render(); st('Selected '+id+' — click target dot');
+      });
+      // Don't add 'sel' class yet — wait for picker choice
+      return;
+    }
+    // 0 or 1 net — select immediately, no picker needed
+    nodes[id].el.classList.add('sel');
+    render(); st('Selected '+id+' — click target dot');
+  } else if(sel===id){
+    nodes[id].el.classList.remove('sel'); sel=null; selNet=null;
+    render(); st('Deselected.');
+  } else {
+    const fid=sel, tid=id, sn=selNet;
+    nodes[fid].el.classList.remove('sel'); sel=null; selNet=null;
+    // Duplicate check
+    if(S.conns.some(c=>((c.from===fid&amp;&amp;c.to===tid)||(c.from===tid&amp;&amp;c.to===fid))&amp;&amp;(sn&amp;&amp;sn!=='__new__'?c.net===sn:true))){
+      render(); st('Already connected.'); return;
+    }
+    pushUndo();
+    const forceNew = (sn==='__new__');
+
+    let nid;
+    if(sn &amp;&amp; sn!=='__new__' &amp;&amp; S.nets[sn]){
+      // User explicitly chose to continue an existing net from a multi-net pin
+      nid=sn;
+      S.nets[nid].dots.add(fid); S.nets[nid].dots.add(tid);
+    } else if(forceNew){
+      // User explicitly wants a brand new separate net
+      const pcbA=pcbIdxOf(fid), pcbB=pcbIdxOf(tid), tpi=pcbA>=0?pcbA:pcbB>=0?pcbB:-1;
+      const color=tpi>=0?pcbColor(tpi):pickBestColor();
+      nid='n'+(++S.nc);
+      S.nets[nid]={color,dots:new Set([fid,tid]),pcbIdx:tpi};
+    } else {
+      // Determine net purely from the START point (fid), never from the endpoint.
+      // This means arriving at a busy pin does NOT absorb or merge nets.
+
+      const pcbFrom = pcbIdxOf(fid);
+      const netsOnFrom = getNetsOf(fid);
+
+      if(pcbFrom >= 0){
+        // Starting from a PCB point — find or create the net for this PCB index
+        const existing = Object.entries(S.nets).find(([,v])=>v.pcbIdx===pcbFrom)?.[0] || null;
+        if(existing){
+          nid=existing;
+          S.nets[nid].dots.add(fid); S.nets[nid].dots.add(tid);
+        } else {
+          nid='n'+(++S.nc);
+          S.nets[nid]={color:pcbColor(pcbFrom), dots:new Set([fid,tid]), pcbIdx:pcbFrom};
+        }
+      } else if(netsOnFrom.length===1){
+        // Starting from a pin with exactly one net — extend that net
+        nid=netsOnFrom[0];
+        S.nets[nid].dots.add(fid); S.nets[nid].dots.add(tid);
+      } else if(netsOnFrom.length===0){
+        // Starting from an unconnected pin — check if landing on a PCB point
+        const pcbTo = pcbIdxOf(tid);
+        if(pcbTo>=0){
+          const existing = Object.entries(S.nets).find(([,v])=>v.pcbIdx===pcbTo)?.[0] || null;
+          if(existing){
+            nid=existing;
+            S.nets[nid].dots.add(fid); S.nets[nid].dots.add(tid);
+          } else {
+            nid='n'+(++S.nc);
+            S.nets[nid]={color:pcbColor(pcbTo), dots:new Set([fid,tid]), pcbIdx:pcbTo};
+          }
+        } else {
+          // Neither end has any net — fresh net with palette color
+          nid='n'+(++S.nc);
+          S.nets[nid]={color:pickBestColor(), dots:new Set([fid,tid]), pcbIdx:-1};
+        }
+      }
+      // netsOnFrom.length > 1 is handled above by the picker (selNet would be set)
+    }
+    S.conns.push({from:fid, to:tid, net:nid});
+    render(); st('Connected! ('+S.conns.length+')');
+  }
+}
+
+function doDelete(idx){
+  pushUndo();
+  const net=S.conns[idx].net;
+  S.conns.splice(idx,1);
+  const nn={};Object.entries(S.notes).forEach(([k,v])=>{const ki=parseInt(k);if(ki<idx)nn[k]=v;else if(ki>idx)nn[''+(ki-1)]=v;});
+  S.notes=nn;rebuildNet(net);hlNets.delete(net);render();st('Deleted.');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CANVAS CLICK — line-mode clicks (highlight line / note / delete / recolor on line)
+// ═══════════════════════════════════════════════════════════════════
+function entryPt(id){if(potEx[id])return{x:potEx[id].x,y:potEx[id].y};return{x:nodes[id].x,y:nodes[id].y};}
+
+function computeRoutes(){
+  const vOcc=VCHANS.map(()=>[]),routes=[];
+  S.conns.forEach((conn,ci)=>{
+    const n1=nodes[conn.from],n2=nodes[conn.to];if(!n1||!n2)return;
+    const color=S.nets[conn.net]?S.nets[conn.net].color:'#aaa';
+    const A=entryPt(conn.from),B=entryPt(conn.to);
+    if(Math.abs(A.y-B.y)<2){routes.push({segs:[[A.x,A.y,B.x,B.y]],color,net:conn.net,idx:ci});return;}
+    const yMin=Math.min(A.y,B.y),yMax=Math.max(A.y,B.y),idealX=(A.x+B.x)/2;
+    let bestV=-1,bestScore=Infinity;
+    VCHANS.forEach((vx,vi)=>{
+      if(vOcc[vi].some(s=>s.y1<yMax+3&amp;&amp;s.y2>yMin-3))return;
+      const inRange=vx>=Math.min(A.x,B.x)-10&amp;&amp;vx<=Math.max(A.x,B.x)+10;
+      const score=Math.abs(vx-idealX)+(inRange?0:200);
+      if(score<bestScore){bestScore=score;bestV=vi;}
+    });
+    if(bestV===-1){const mx=(A.x+B.x)/2;routes.push({segs:[[A.x,A.y,mx,A.y],[mx,A.y,mx,B.y],[mx,B.y,B.x,B.y]],color,net:conn.net,idx:ci});return;}
+    const vx=VCHANS[bestV];vOcc[bestV].push({y1:yMin,y2:yMax});
+    routes.push({segs:[[A.x,A.y,vx,A.y],[vx,A.y,vx,B.y],[vx,B.y,B.x,B.y]],color,net:conn.net,idx:ci});
+  });
+  return routes;
+}
+
+function ptSeg(px,py,x1,y1,x2,y2){
+  const dx=x2-x1,dy=y2-y1;if(!dx&amp;&amp;!dy)return Math.hypot(px-x1,py-y1);
+  const t=Math.max(0,Math.min(1,((px-x1)*dx+(py-y1)*dy)/(dx*dx+dy*dy)));
+  return Math.hypot(px-(x1+t*dx),py-(y1+t*dy));
+}
+function findRoute(mx,my){
+  const routes=computeRoutes();let best=-1,bestD=14,bestNet=null;
+  routes.forEach(({segs,net},idx)=>{
+    segs.forEach(([x1,y1,x2,y2])=>{const d=ptSeg(mx,my,x1,y1,x2,y2);if(d<bestD){bestD=d;best=idx;bestNet=net;}});
+  });return{idx:best,net:bestNet};
+}
+
+cI.addEventListener('click',e=>{
+  const r=cI.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  const{idx,net}=findRoute(mx,my);
+  if(mode==='highlight'){
+    if(idx<0){hlNets.clear();render();return;}
+    if(hlNets.has(net))hlNets.delete(net);else hlNets.add(net);
+    render();
+  } else if(mode==='note'){
+    if(idx>=0)openNote(idx,e.clientX,e.clientY);
+  } else if(mode==='delete'){
+    if(idx>=0)doDelete(idx);
+  } else if(mode==='recolor'){
+    if(idx>=0&amp;&amp;net&amp;&amp;S.nets[net])doRecolor(net,e.clientX+8,e.clientY+8);
+  }
+});
+
+cI.addEventListener('mousemove',e=>{
+  const r=cI.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  let onDiamond=false;
+  for(const dp of dpos){if(Math.abs(mx-dp.x)<14&amp;&amp;Math.abs(my-dp.y)<14){onDiamond=true;break;}}
+  if(onDiamond){showTooltip(e);cI.style.cursor='help';return;}
+  hideTooltip();
+  if(mode==='connect'){cI.style.cursor='default';return;}
+  const{idx}=findRoute(mx,my);
+  cI.style.cursor=idx>=0?(mode==='delete'?'not-allowed':'pointer'):'default';
+});
+cI.addEventListener('mouseleave',hideTooltip);
+
+mat.addEventListener('mousemove',e=>{
+  if(mode!=='connect')return;
+  const r=mat.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  let found=null;for(const dp of dpos){if(Math.abs(mx-dp.x)<14&amp;&amp;Math.abs(my-dp.y)<14){found=dp;break;}}
+  if(found)showTooltip(e);else hideTooltip();
+});
+mat.addEventListener('mouseleave',()=>{if(mode==='connect')hideTooltip();});
+
+// ═══════════════════════════════════════════════════════════════════
+// RECOLOR
+// ═══════════════════════════════════════════════════════════════════
+let pDiv=null;
+function doRecolor(netId,x,y){
+  if(pDiv)pDiv.remove();
+  pDiv=document.createElement('div');
+  pDiv.style.cssText='position:fixed;left:'+x+'px;top:'+y+'px;background:#1a1a2e;border:1px solid #00ffc8;padding:10px 14px;border-radius:4px;z-index:10000;display:flex;align-items:center;gap:10px;font-size:.74rem;color:#c8d0e0;font-family:Share Tech Mono,monospace;box-shadow:0 4px 20px rgba(0,255,200,.2);';
+  pDiv.innerHTML='<span>Color:</span><input type=&quot;color&quot; id=&quot;cpk&quot; value=&quot;'+S.nets[netId].color+'&quot; style=&quot;width:34px;height:22px;border:none;padding:0;cursor:pointer;&quot;><button onclick=&quot;this.parentNode.remove()&quot; style=&quot;background:transparent;border:1px solid #555;color:#aaa;padding:2px 8px;cursor:pointer;&quot;>\u2715</button>';
+  document.body.appendChild(pDiv);
+  pDiv.querySelector('#cpk').addEventListener('input',e=>{pushUndo();S.nets[netId].color=e.target.value;render();});
+  setTimeout(()=>document.addEventListener('click',function h(ev){if(!pDiv||!pDiv.contains(ev.target)){if(pDiv)pDiv.remove();pDiv=null;document.removeEventListener('click',h);}}),150);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NOTE PANEL
+// ═══════════════════════════════════════════════════════════════════
+function openNote(idx,px,py){
+  aNoteIdx=idx;const conn=S.conns[idx];
+  document.getElementById('nclbl').textContent=conn?conn.from+' \u2192 '+conn.to:'';
+  document.getElementById('ntxt').value=S.notes[''+idx]||'';
+  const left=Math.min(px+12,window.innerWidth-286),top=Math.min(py+8,window.innerHeight-196);
+  document.getElementById('npanel').style.cssText='display:block;left:'+left+'px;top:'+top+'px;';
+  setTimeout(()=>document.getElementById('ntxt').focus(),50);
+}
+function saveNote(){
+  const txt=document.getElementById('ntxt').value.trim();
+  if(aNoteIdx!==null){pushUndo();if(txt)S.notes[''+aNoteIdx]=txt;else delete S.notes[''+aNoteIdx];}
+  closeNote();render();
+}
+function closeNote(){document.getElementById('npanel').style.display='none';aNoteIdx=null;}
+
+// ═══════════════════════════════════════════════════════════════════
+// TOOLTIP
+// ═══════════════════════════════════════════════════════════════════
+const tt=document.getElementById('ntt');
+function showTooltip(e){
+  const r=mat.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  let found=null;for(const dp of dpos){if(Math.abs(mx-dp.x)<14&amp;&amp;Math.abs(my-dp.y)<14){found=dp;break;}}
+  if(!found){hideTooltip();return;}
+  const conn=S.conns[found.idx];
+  const lbl=conn?'<span style=&quot;color:#a29bfe;font-size:.65rem&quot;>'+conn.from+' \u2192 '+conn.to+'</span><br>':'';
+  tt.innerHTML=lbl+found.note.replace(/\n/g,'<br>');
+  const tw=tt.offsetWidth||200,th=tt.offsetHeight||60;
+  tt.style.cssText='display:block;left:'+Math.min(e.clientX+14,window.innerWidth-tw-10)+'px;top:'+Math.min(e.clientY+14,window.innerHeight-th-10)+'px;';
+}
+function hideTooltip(){tt.style.display='none';}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODE
+// ═══════════════════════════════════════════════════════════════════
+const MODE_COLS={connect:'#00ffc8',highlight:'#f9ca24',note:'#a29bfe',delete:'#ff4444',recolor:'#f39c12'};
+function setMode(m){
+  if(mode==='highlight'&amp;&amp;m!=='highlight')hlNets.clear();
+  mode=m;
+  closePicker();
+  // In connect mode, cI has no pointer events so dot divs get clicks directly.
+  // In other modes cI intercepts line clicks; dot divs still get clicks too (stopPropagation).
+  cI.style.pointerEvents=(m==='connect')?'none':'auto';
+  Object.keys(MODE_COLS).forEach(n=>{const btn=document.getElementById('btn-'+n);if(!btn)return;btn.style.cssText=m===n?'border-color:'+MODE_COLS[n]+';color:'+MODE_COLS[n]:'';});
+  if(sel){nodes[sel].el.classList.remove('sel');sel=null;selNet=null;}
+  const msgs={connect:'Click dot to start • hover ◆ for notes',highlight:'Click dot/line to highlight net(s)',note:'Click dot or line to add note',delete:'Click dot or line to delete connection',recolor:'Click dot or line to recolor net'};
+  st(msgs[m]||'');render();
+}
+function st(t){document.getElementById('st').textContent=t;}
+
+// ═══════════════════════════════════════════════════════════════════
+// DRAW DOT — pie slices for multi-net pins
+// ═══════════════════════════════════════════════════════════════════
+function drawDot(ctx,x,y,r,netColors,isSelected,isDimmed){
+  // netColors: array of color strings (one per net on this pin)
+  const alpha=isDimmed?0.25:1;
+  ctx.save();ctx.globalAlpha=alpha;
+  if(netColors.length===0){
+    // Unconnected — white fill, dark border
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle='white';ctx.fill();
+    ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.stroke();
+  } else if(netColors.length===1){
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=h2r(netColors[0],0.3);ctx.fill();
+    ctx.strokeStyle=netColors[0];ctx.lineWidth=2.5;ctx.stroke();
+  } else {
+    // Pie slices
+    const step=(Math.PI*2)/netColors.length;
+    netColors.forEach((col,i)=>{
+      ctx.beginPath();ctx.moveTo(x,y);
+      ctx.arc(x,y,r,i*step-Math.PI/2,(i+1)*step-Math.PI/2);
+      ctx.closePath();ctx.fillStyle=col;ctx.fill();
+    });
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.strokeStyle='rgba(0,0,0,0.25)';ctx.lineWidth=1;ctx.stroke();
+    // Thin dividers
+    netColors.forEach((_,i)=>{
+      const ang=i*(Math.PI*2/netColors.length)-Math.PI/2;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+r*Math.cos(ang),y+r*Math.sin(ang));
+      ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=1;ctx.stroke();
+    });
+  }
+  if(isSelected){
+    ctx.beginPath();ctx.arc(x,y,r+3,0,Math.PI*2);
+    ctx.strokeStyle='#00ffc8';ctx.lineWidth=2.5;ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LINE STYLE
+// ═══════════════════════════════════════════════════════════════════
+function getLS(){
+  switch(document.getElementById('ls').value){
+    case 'dashed':return{d:[10,6],w:2.5};case 'dotted':return{d:[2,5],w:2.5};
+    case 'thick':return{d:[],w:4.5};case 'thin':return{d:[],w:1.5};default:return{d:[],w:2.5};
+  }
+}
+function drawSegs(ctx,segs,color,lw,dash,alpha){
+  ctx.save();ctx.globalAlpha=alpha||1;ctx.strokeStyle=color;ctx.lineWidth=lw;
+  ctx.setLineDash(dash||[]);ctx.lineJoin='round';ctx.lineCap='round';
+  segs.forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();});
+  ctx.setLineDash([]);ctx.restore();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════
+function render(){
+  xB.clearRect(0,0,MW,MH);xF.clearRect(0,0,MW,MH);
+  const hasHL=hlNets.size>0;
+
+  // Dividers
+  xB.setLineDash([8,5]);xB.strokeStyle='#bbb';xB.lineWidth=1.5;
+  [POT_DIV,LEG_DIV].forEach(x=>{xB.beginPath();xB.moveTo(x,0);xB.lineTo(x,MH);xB.stroke();});
+  xB.setLineDash([]);
+
+  // Pot stubs
+  [{cy:p1_cy,lbl:'p1'},{cy:p2_cy,lbl:'p2'}].forEach(({cy,lbl})=>{
+    PIN_DYS.forEach((dy,i)=>{
+      const ang=Math.atan2(dy,R),ex=Math.round(POT_CX+R*Math.cos(ang)),ey=cy+dy;
+      const nets=getNetsOf(lbl+'-'+(i+1));
+      const col=nets.length&amp;&amp;S.nets[nets[0]]?S.nets[nets[0]].color:'#555';
+      const dim=hasHL&amp;&amp;!nets.some(n=>hlNets.has(n));
+      xB.globalAlpha=dim?0.2:1;
+      xB.setLineDash([5,4]);xB.strokeStyle=col;xB.lineWidth=nets.length?2:1.5;
+      xB.beginPath();xB.moveTo(ex,ey);xB.lineTo(ex+32,ey);xB.stroke();
+      xB.setLineDash([]);xB.beginPath();xB.moveTo(ex+32,ey);xB.lineTo(ex+54,ey);xB.stroke();
+      xB.globalAlpha=1;
+    });
+  });
+
+  // Connections
+  const ls=getLS(),routes=computeRoutes();
+  routes.forEach(({segs,color,net})=>{
+    const isHL=hlNets.has(net),dim=hasHL&amp;&amp;!isHL;
+    drawSegs(dim?xB:xF,segs,color,isHL?ls.w+1.5:ls.w,ls.d,dim?0.15:1);
+    if(isHL)drawSegs(xF,segs,color,ls.w+5,ls.d,0.14);
+  });
+
+  // Note diamonds
+  dpos=[];
+  routes.forEach(({segs,color,net},idx)=>{
+    const note=S.notes[''+idx];if(!note)return;
+    const ms=segs[Math.floor(segs.length/2)],mx=(ms[0]+ms[2])/2,my=(ms[1]+ms[3])/2;
+    dpos.push({x:mx,y:my,idx,note});
+    const dim=hasHL&amp;&amp;!hlNets.has(net),ctx=dim?xB:xF,ds=7;
+    ctx.save();ctx.globalAlpha=dim?0.25:1;
+    ctx.fillStyle=color;ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(mx,my-ds);ctx.lineTo(mx+ds,my);ctx.lineTo(mx,my+ds);ctx.lineTo(mx-ds,my);ctx.closePath();
+    ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 8px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('!',mx,my);ctx.restore();
+  });
+
+  // Pot values
+  [{cy:p1_cy,lbl:'P1'},{cy:p2_cy,lbl:'P2'}].forEach(({cy,lbl})=>{
+    const v=pvInputs[lbl]?.value;if(!v)return;
+    xF.save();xF.font='bold 10px monospace';xF.fillStyle='#444';
+    xF.textAlign='center';xF.textBaseline='top';xF.fillText(v,POT_CX,cy+R+8);xF.restore();
+  });
+
+  // Draw all dots on front canvas
+  Object.entries(nodes).forEach(([id,node])=>{
+    const nets=getNetsOf(id);
+    const colors=nets.map(n=>S.nets[n]?.color).filter(Boolean);
+    const dim=hasHL&amp;&amp;!nets.some(n=>hlNets.has(n))&amp;&amp;nets.length>0;
+    drawDot(xF,node.x,node.y,node.r,colors,id===sel,dim);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// UNSAVED CHANGES + AUTO-VERSION
+// ═══════════════════════════════════════════════════════════════════
+let isDirty=false;
+
+function markDirty(){
+  if(!isDirty){
+    isDirty=true;
+    document.title='* CB Matrix — unsaved';
+    document.getElementById('save-indicator').style.display='inline';
+  }
+}
+function markClean(){
+  isDirty=false;
+  document.title='CB Matrix';
+  document.getElementById('save-indicator').style.display='none';
+}
+
+window.addEventListener('beforeunload',e=>{
+  if(isDirty){e.preventDefault();e.returnValue='';}
+});
+
+// Parse version string like &quot;v1&quot;, &quot;v3&quot;, &quot;2&quot;, &quot;rev4&quot; → number
+function parseRev(s){const m=(s||'').match(/(\d+)\s*$/);return m?parseInt(m[1]):0;}
+function bumpRev(s){
+  const n=parseRev(s);
+  // Keep prefix before the number, increment the number
+  const m=(s||'').match(/^(.*?)(\d+)\s*$/);
+  if(m) return m[1]+(n+1);
+  return 'v'+(n+1);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SAVE / LOAD
+// ═══════════════════════════════════════════════════════════════════
+function saveProject(){
+  syncLabelsToState();
+  // Auto-bump revision
+  const revEl=document.getElementById('fr');
+  const newRev=bumpRev(revEl.value);
+  revEl.value=newRev;
+  const d={meta:{project:document.getElementById('fp').value,date:document.getElementById('fd').value,rev:newRev},
+    pcbLabels:S.pcbLabels,potValues:Object.fromEntries(Object.entries(pvInputs).map(([k,v])=>[k,v.value])),
+    lineStyle:document.getElementById('ls').value,conns:S.conns.map(c=>({...c})),notes:S.notes,
+    nets:Object.fromEntries(Object.entries(S.nets).map(([k,v])=>[k,{color:v.color,dots:[...v.dots],pcbIdx:v.pcbIdx}])),nc:S.nc};
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));
+  a.download=((d.meta.project||'matrix').replace(/\s+/g,'_').toLowerCase())+'_v'+parseRev(newRev)+'_cbmatrix.json';
+  a.click();URL.revokeObjectURL(a.href);
+  markClean();
+  st('Saved! ('+newRev+')');
+}
+function onLoad(e){
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      document.getElementById('fp').value=d.meta?.project||'';
+      document.getElementById('fd').value=d.meta?.date||'';
+      document.getElementById('fr').value=d.meta?.rev||'';
+      if(d.potValues)Object.entries(d.potValues).forEach(([k,v])=>{if(pvInputs[k])pvInputs[k].value=v;});
+      if(d.lineStyle)document.getElementById('ls').value=d.lineStyle;
+      pushUndo();
+      S.conns=d.conns||[];S.notes=d.notes||{};
+      S.pcbLabels=d.pcbLabels||Array(N_LEG).fill('');
+      S.nets=Object.fromEntries(Object.entries(d.nets||{}).map(([k,v])=>[k,{color:v.color,dots:new Set(v.dots),pcbIdx:v.pcbIdx}]));
+      S.nc=d.nc||0;
+      syncLabelsFromState();
+      hlNets.clear();render();markClean();st('Loaded! ('+document.getElementById('fr').value+')');
+    }catch(err){st('Error: '+err.message);}
+  };
+  rd.readAsText(f);e.target.value='';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+Object.values(pvInputs).forEach(i=>i.addEventListener('input',render));
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeNote();closePicker();}
+  if((e.ctrlKey||e.metaKey)&amp;&amp;e.key==='z'){e.preventDefault();undoLast();}
+  if((e.ctrlKey||e.metaKey)&amp;&amp;(e.key==='y'||(e.shiftKey&amp;&amp;e.key==='Z'))){e.preventDefault();redoLast();}
+});
+setMode('connect');
+render();
+</script>
+</body>
+</html>
+" data-mobile="<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes&quot;>
+<meta name=&quot;apple-mobile-web-app-capable&quot; content=&quot;yes&quot;>
+<title>CB Matrix</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&amp;family=Orbitron:wght@700;900&amp;display=swap');
+:root{--bg:#0a0a0f;--panel:#111118;--panel2:#16161f;--border:#2a2a3a;--accent:#00ffc8;--text:#c8d0e0;--dim:#555570;--danger:#ff4444;--warn:#f39c12;
+  --mat-bg:#ffffff;--mat-text:#111111;--mat-dim:#888888;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;touch-action:manipulation;}
+
+/* MAIN area — white background */
+#main{position:fixed;top:44px;bottom:calc(52px + env(safe-area-inset-bottom));left:0;right:0;overflow:auto;-webkit-overflow-scrolling:touch;background:var(--mat-bg);}
+#matrix-wrap{position:relative;width:100%;height:100%;background:var(--mat-bg);}
+#line-canvas{position:absolute;top:0;left:0;pointer-events:none;z-index:5;}
+#topbar{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 10px;height:44px;gap:6px;}
+#topbar h1{font-family:'Orbitron',monospace;font-size:.62rem;font-weight:900;letter-spacing:.1em;color:var(--accent);white-space:nowrap;}
+.tbsp{flex:1;}
+.icon-btn{width:32px;height:32px;border-radius:6px;background:transparent;border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0;}
+.icon-btn:active{background:rgba(0,255,200,.1);border-color:var(--accent);}
+
+/* STATUS */
+#st{position:fixed;top:44px;left:0;right:0;z-index:90;background:rgba(0,255,200,.08);border-bottom:1px solid rgba(0,255,200,.2);font-size:.62rem;color:var(--accent);padding:3px 12px;text-align:center;transition:opacity .4s;opacity:0;pointer-events:none;}
+#st.show{opacity:1;}
+
+/* MODE BAR */
+#modebar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--panel);border-top:1px solid var(--border);display:flex;height:52px;padding-bottom:env(safe-area-inset-bottom);}
+.mtab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;font-size:.45rem;color:var(--dim);text-transform:uppercase;letter-spacing:.04em;border:none;background:transparent;transition:color .15s;}
+.mtab svg{display:block;}
+.mtab.active{color:var(--accent);}
+.mtab.active svg *{stroke:var(--accent)!important;}
+.mtab.del.active{color:var(--danger);}
+.mtab.del.active svg *{stroke:var(--danger)!important;}
+
+/* TOP BAR */
+#matrix-grid{
+  display:grid;
+  grid-template-columns: 44px 1fr 1fr 1fr 70px;
+  grid-template-rows: 20px repeat(3,1fr);
+  gap:0;width:100%;height:100%;padding:6px 4px;
+  position:relative;z-index:10;
+}
+
+/* Headers */
+.sec-hdr{font-family:'Orbitron',monospace;font-weight:700;font-size:.46rem;color:#999;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;background:#fff;}
+.pot-hdr{grid-column:1;grid-row:1;writing-mode:vertical-rl;transform:rotate(180deg);}
+.sw-hdr{grid-column:2/5;grid-row:1;text-align:center;}
+.pcb-hdr{grid-column:5;grid-row:1;}
+
+/* Switch cells */
+.sw-cell{display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;border:1px solid #ccc;border-radius:5px;margin:2px;padding:3px 1px;position:relative;background:#fff;}
+.sw-lbl{font-family:'Orbitron',monospace;font-size:.44rem;font-weight:700;color:#666;letter-spacing:.04em;}
+
+/* Pot column */
+.pot-col{grid-column:1;grid-row:2/5;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:2px;background:#fff;}
+.pot-grp{display:flex;flex-direction:column;align-items:center;gap:1px;}
+.pot-lbl{font-family:'Orbitron',monospace;font-size:.44rem;font-weight:700;color:#666;letter-spacing:.04em;}
+.pot-val-txt{font-size:.38rem;color:#888;max-width:38px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;}
+
+/* PCB column */
+.pcb-col{grid-column:5;grid-row:2/5;display:flex;flex-direction:column;justify-content:space-evenly;padding:2px 0 2px 2px;gap:0;background:#fff;}
+.pcb-row-m{display:flex;align-items:center;gap:2px;}
+.pcb-num{font-size:.38rem;color:#aaa;min-width:10px;text-align:right;flex-shrink:0;}
+.pcb-lbl{font-size:.44rem;color:#333;min-width:0;max-width:42px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+
+/* DOTS */
+.dot-wrap{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.dot-wrap svg{display:block;overflow:visible;}
+@keyframes sel-pulse{0%{opacity:.8;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(2.2);}}
+.sel-pulse{position:absolute;top:50%;left:50%;border-radius:50%;border:2px solid var(--accent);pointer-events:none;animation:sel-pulse .5s ease-out forwards;}
+.nbadge{width:8px;height:8px;background:var(--warn);border-radius:1px;transform:rotate(45deg);position:absolute;top:-1px;right:-1px;pointer-events:none;z-index:2;}
+
+/* SHEETS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;display:none;align-items:flex-end;}
+.overlay.open{display:flex;}
+.sheet{background:var(--panel2);border-radius:16px 16px 0 0;border-top:1px solid var(--border);width:100%;padding:0 0 calc(env(safe-area-inset-bottom)+10px);max-height:80vh;overflow-y:auto;}
+.sh{width:32px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 12px;}
+.s-title{font-family:'Orbitron',monospace;font-size:.72rem;color:var(--accent);text-align:center;margin-bottom:12px;letter-spacing:.1em;}
+.s-item{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;font-size:.75rem;color:var(--text);}
+.s-item:last-child{border-bottom:none;}
+.s-item:active{background:rgba(255,255,255,.04);}
+.s-swatch{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.2);flex-shrink:0;}
+.s-sub{font-size:.6rem;color:var(--dim);}
+.s-btn{width:calc(100% - 28px);margin:6px 14px;padding:13px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:.72rem;text-align:center;border-radius:10px;cursor:pointer;display:block;}
+.s-btn:active{border-color:var(--accent);color:var(--accent);}
+.s-btn.acc{border-color:var(--accent);color:var(--accent);}
+.s-btn.danger{border-color:var(--danger);color:var(--danger);}
+.n-from{font-size:.62rem;color:var(--dim);text-align:center;margin-bottom:10px;padding:0 16px;}
+#ntxt{width:calc(100% - 28px);margin:0 14px 6px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:.75rem;padding:10px;resize:none;outline:none;border-radius:8px;height:90px;display:block;}
+#ntxt:focus{border-color:var(--accent);}
+.n-hint{font-size:.58rem;color:var(--dim);text-align:center;margin-bottom:8px;}
+.c-prev{width:44px;height:44px;border-radius:50%;margin:0 auto 10px;border:3px solid rgba(255,255,255,.2);}
+#cpick{display:block;width:calc(100% - 28px);margin:0 14px 10px;height:46px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg);}
+.mf{padding:0 16px 12px;}
+.ml{font-size:.58rem;color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;}
+.mf input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:.8rem;padding:5px 2px;outline:none;}
+.mf input:focus{border-bottom-color:var(--accent);}
+.pcb-edit-row{display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid rgba(255,255,255,.04);}
+.pcb-edit-num{font-size:.6rem;color:var(--dim);min-width:24px;}
+.pcb-edit-inp{flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:.75rem;padding:3px 2px;outline:none;}
+.pcb-edit-inp:focus{border-bottom-color:var(--accent);}
+.pcb-edit-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+#file-inp{display:none;}
+</style>
+</head>
+<body>
+
+<div id=&quot;topbar&quot;>
+  <h1>⚡ CB MATRIX</h1>
+  <div id=&quot;save-ind&quot; style=&quot;display:none;font-size:.52rem;color:#f39c12;border:1px solid #f39c12;border-radius:3px;padding:1px 5px;letter-spacing:.04em;align-items:center;&quot;>UNSAVED</div>
+  <div class=&quot;tbsp&quot;></div>
+  <div class=&quot;icon-btn&quot; id=&quot;undo-btn&quot; onclick=&quot;undoLast()&quot; title=&quot;Undo&quot;>↩</div>
+  <div class=&quot;icon-btn&quot; id=&quot;redo-btn&quot; onclick=&quot;redoLast()&quot; title=&quot;Redo&quot;>↪</div>
+  <div class=&quot;icon-btn&quot; onclick=&quot;openPcbEdit()&quot; title=&quot;Edit PCB labels&quot;>⊞</div>
+  <div class=&quot;icon-btn&quot; onclick=&quot;openSheet('meta-ov')&quot; title=&quot;Menu&quot;>☰</div>
+</div>
+
+<div id=&quot;st&quot;></div>
+
+<div id=&quot;main&quot;>
+  <div id=&quot;matrix-wrap&quot;>
+    <canvas id=&quot;line-canvas&quot; style=&quot;position:absolute;top:0;left:0;pointer-events:none;z-index:5;&quot;></canvas>
+    <canvas id=&quot;line-canvas-front&quot; style=&quot;position:absolute;top:0;left:0;pointer-events:none;z-index:25;&quot;></canvas>
+    <div id=&quot;matrix-grid&quot;>
+      <div class=&quot;sec-hdr pot-hdr&quot;>POTS</div>
+      <div class=&quot;sec-hdr sw-hdr&quot;>MTS-103 SWITCHES</div>
+      <div class=&quot;sec-hdr pcb-hdr&quot; style=&quot;writing-mode:vertical-rl;transform:rotate(180deg);font-size:.42rem;&quot;>PCB</div>
+      <div class=&quot;pot-col&quot; id=&quot;pot-col&quot;></div>
+      <div id=&quot;sw-r0c0&quot; class=&quot;sw-cell&quot; style=&quot;grid-column:2;grid-row:2;&quot;></div>
+      <div id=&quot;sw-r0c1&quot; class=&quot;sw-cell&quot; style=&quot;grid-column:3;grid-row:2;&quot;></div>
+      <div id=&quot;sw-r0c2&quot; class=&quot;sw-cell&quot; style=&quot;grid-column:4;grid-row:2;&quot;></div>
+      <div id=&quot;sw-r1c0&quot; class=&quot;sw-cell&quot; style=&quot;grid-column:2;grid-row:3;&quot;></div>
+      <div id=&quot;sw-r1c1&quot; class=&quot;sw-cell&quot; style=&quot;grid-column:3;grid-row:3;&quot;></div>
+      <div id=&quot;sw-r1c2&quot; class=&quot;sw-cell&quot; style=&quot;grid-column:4;grid-row:3;&quot;></div>
+      <div id=&quot;sw-r2c0&quot; class=&quot;sw-cell&quot; style=&quot;grid-column:2;grid-row:4;&quot;></div>
+      <div id=&quot;sw-r2c1&quot; class=&quot;sw-cell&quot; style=&quot;grid-column:3;grid-row:4;&quot;></div>
+      <div id=&quot;sw-r2c2&quot; class=&quot;sw-cell&quot; style=&quot;grid-column:4;grid-row:4;&quot;></div>
+      <div class=&quot;pcb-col&quot; id=&quot;pcb-col&quot;></div>
+    </div>
+  </div>
+</div>
+
+<div id=&quot;modebar&quot;>
+  <button class=&quot;mtab active&quot; id=&quot;tab-connect&quot; onclick=&quot;setMode('connect')&quot;>
+    <svg width=&quot;20&quot; height=&quot;20&quot; viewBox=&quot;0 0 20 20&quot; fill=&quot;none&quot;><circle cx=&quot;4&quot; cy=&quot;10&quot; r=&quot;2.5&quot; stroke=&quot;#c8d0e0&quot; stroke-width=&quot;1.6&quot;/><circle cx=&quot;16&quot; cy=&quot;10&quot; r=&quot;2.5&quot; stroke=&quot;#c8d0e0&quot; stroke-width=&quot;1.6&quot;/><line x1=&quot;6.5&quot; y1=&quot;10&quot; x2=&quot;13.5&quot; y2=&quot;10&quot; stroke=&quot;#c8d0e0&quot; stroke-width=&quot;1.6&quot;/></svg>Connect
+  </button>
+  <button class=&quot;mtab&quot; id=&quot;tab-highlight&quot; onclick=&quot;setMode('highlight')&quot;>
+    <svg width=&quot;20&quot; height=&quot;20&quot; viewBox=&quot;0 0 20 20&quot; fill=&quot;none&quot;><circle cx=&quot;10&quot; cy=&quot;10&quot; r=&quot;6&quot; stroke=&quot;#c8d0e0&quot; stroke-width=&quot;1.6&quot;/><circle cx=&quot;10&quot; cy=&quot;10&quot; r=&quot;2.5&quot; stroke=&quot;#c8d0e0&quot; stroke-width=&quot;1.6&quot;/></svg>Trace
+  </button>
+  <button class=&quot;mtab&quot; id=&quot;tab-note&quot; onclick=&quot;setMode('note')&quot;>
+    <svg width=&quot;20&quot; height=&quot;20&quot; viewBox=&quot;0 0 20 20&quot; fill=&quot;none&quot;><rect x=&quot;3&quot; y=&quot;2&quot; width=&quot;14&quot; height=&quot;16&quot; rx=&quot;2&quot; stroke=&quot;#c8d0e0&quot; stroke-width=&quot;1.6&quot;/><line x1=&quot;7&quot; y1=&quot;7&quot; x2=&quot;13&quot; y2=&quot;7&quot; stroke=&quot;#c8d0e0&quot; stroke-width=&quot;1.6&quot;/><line x1=&quot;7&quot; y1=&quot;11&quot; x2=&quot;13&quot; y2=&quot;11&quot; stroke=&quot;#c8d0e0&quot; stroke-width=&quot;1.6&quot;/></svg>Note
+  </button>
+  <button class=&quot;mtab del&quot; id=&quot;tab-delete&quot; onclick=&quot;setMode('delete')&quot;>
+    <svg width=&quot;20&quot; height=&quot;20&quot; viewBox=&quot;0 0 20 20&quot; fill=&quot;none&quot;><line x1=&quot;5&quot; y1=&quot;5&quot; x2=&quot;15&quot; y2=&quot;15&quot; stroke=&quot;#c8d0e0&quot; stroke-width=&quot;1.6&quot;/><line x1=&quot;15&quot; y1=&quot;5&quot; x2=&quot;5&quot; y2=&quot;15&quot; stroke=&quot;#c8d0e0&quot; stroke-width=&quot;1.6&quot;/></svg>Delete
+  </button>
+  <button class=&quot;mtab&quot; id=&quot;tab-recolor&quot; onclick=&quot;setMode('recolor')&quot;>
+    <svg width=&quot;20&quot; height=&quot;20&quot; viewBox=&quot;0 0 20 20&quot; fill=&quot;none&quot;><circle cx=&quot;10&quot; cy=&quot;10&quot; r=&quot;6&quot; stroke=&quot;#c8d0e0&quot; stroke-width=&quot;1.6&quot;/><circle cx=&quot;10&quot; cy=&quot;10&quot; r=&quot;2&quot; fill=&quot;#c8d0e0&quot;/></svg>Color
+  </button>
+</div>
+
+<!-- SHEETS -->
+<div class=&quot;overlay&quot; id=&quot;netpick-ov&quot; onclick=&quot;if(event.target===this)closeSheet('netpick-ov')&quot;>
+  <div class=&quot;sheet&quot;><div class=&quot;sh&quot;></div><div class=&quot;s-title&quot; id=&quot;np-title&quot;>Choose Net</div><div id=&quot;np-items&quot;></div><div class=&quot;s-btn&quot; onclick=&quot;closeSheet('netpick-ov')&quot;>Cancel</div></div>
+</div>
+<div class=&quot;overlay&quot; id=&quot;note-ov&quot; onclick=&quot;if(event.target===this)closeSheet('note-ov')&quot;>
+  <div class=&quot;sheet&quot;><div class=&quot;sh&quot;></div><div class=&quot;s-title&quot;>Note</div><div class=&quot;n-from&quot; id=&quot;nfrom&quot;></div><textarea id=&quot;ntxt&quot; placeholder=&quot;e.g. pitch CV…&quot;></textarea><div class=&quot;n-hint&quot;>Enter to save · Shift+Enter for new line</div><div class=&quot;s-btn acc&quot; onclick=&quot;saveNote()&quot;>Save</div><div class=&quot;s-btn&quot; onclick=&quot;closeSheet('note-ov')&quot;>Cancel</div></div>
+</div>
+<div class=&quot;overlay&quot; id=&quot;color-ov&quot; onclick=&quot;if(event.target===this)closeSheet('color-ov')&quot;>
+  <div class=&quot;sheet&quot;><div class=&quot;sh&quot;></div><div class=&quot;s-title&quot;>Net Color</div><div class=&quot;c-prev&quot; id=&quot;cprev&quot;></div><input type=&quot;color&quot; id=&quot;cpick&quot; oninput=&quot;onColorInput(this.value)&quot;><div class=&quot;s-btn acc&quot; onclick=&quot;closeSheet('color-ov')&quot;>Done</div></div>
+</div>
+<div class=&quot;overlay&quot; id=&quot;meta-ov&quot; onclick=&quot;if(event.target===this)closeSheet('meta-ov')&quot;>
+  <div class=&quot;sheet&quot;><div class=&quot;sh&quot;></div><div class=&quot;s-title&quot;>Project</div>
+    <div class=&quot;mf&quot;><div class=&quot;ml&quot;>Name</div><input id=&quot;mp&quot; placeholder=&quot;project name…&quot;></div>
+    <div class=&quot;mf&quot;><div class=&quot;ml&quot;>Date</div><input id=&quot;md&quot; placeholder=&quot;dd/mm/yy&quot;></div>
+    <div class=&quot;mf&quot;><div class=&quot;ml&quot;>Rev</div><input id=&quot;mr&quot; placeholder=&quot;v1&quot;></div>
+    <div class=&quot;s-btn&quot; onclick=&quot;saveProject()&quot;>💾 Save JSON</div>
+    <div class=&quot;s-btn&quot; onclick=&quot;document.getElementById('file-inp').click()&quot;>📂 Load JSON</div>
+    <div class=&quot;s-btn danger&quot; onclick=&quot;clearAll()&quot;>Clear All</div>
+    <div class=&quot;s-btn&quot; onclick=&quot;closeSheet('meta-ov')&quot;>Close</div>
+  </div>
+</div>
+<div class=&quot;overlay&quot; id=&quot;pcb-ov&quot; onclick=&quot;if(event.target===this)closeSheet('pcb-ov')&quot;>
+  <div class=&quot;sheet&quot;><div class=&quot;sh&quot;></div><div class=&quot;s-title&quot;>Labels &amp;amp; Values</div>
+    <div style=&quot;padding:0 16px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;&quot;>
+      <div style=&quot;font-family:'Orbitron',monospace;font-size:.6rem;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;&quot;>Potentiometers</div>
+      <div class=&quot;pcb-edit-row&quot; style=&quot;border-bottom:none;padding:4px 0;&quot;>
+        <div class=&quot;pcb-edit-num&quot; style=&quot;min-width:28px;&quot;>P1</div>
+        <input class=&quot;pcb-edit-inp&quot; id=&quot;pv1&quot; placeholder=&quot;e.g. 10kΩ B&quot;>
+      </div>
+      <div class=&quot;pcb-edit-row&quot; style=&quot;border-bottom:none;padding:4px 0;&quot;>
+        <div class=&quot;pcb-edit-num&quot; style=&quot;min-width:28px;&quot;>P2</div>
+        <input class=&quot;pcb-edit-inp&quot; id=&quot;pv2&quot; placeholder=&quot;e.g. 10kΩ B&quot;>
+      </div>
+    </div>
+    <div style=&quot;padding:0 16px 6px;font-family:'Orbitron',monospace;font-size:.6rem;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;padding-top:8px;&quot;>PCB Connections</div>
+    <div id=&quot;pcb-edit-rows&quot;></div>
+    <div class=&quot;s-btn acc&quot; onclick=&quot;savePcbLabels()&quot;>Done</div>
+  </div>
+</div>
+
+<input type=&quot;file&quot; id=&quot;file-inp&quot; accept=&quot;.json&quot; onchange=&quot;onLoad(event)&quot;>
+
+<script>
+// ═══════════════════ PALETTE ════════════════════════════════════════
+const FULL_PAL=['#e74c3c','#27ae60','#2980b9','#f39c12','#8e44ad','#16a085',
+  '#e67e22','#2471a3','#1abc9c','#e91e63','#d35400','#6c5ce7',
+  '#c0392b','#00b894','#0984e3','#a29bfe','#f1c40f','#00cec9','#fd79a8','#55efc4'];
+function hRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function cDist(a,b){const[r1,g1,b1]=hRgb(a),[r2,g2,b2]=hRgb(b);return Math.sqrt(2*(r1-r2)**2+4*(g1-g2)**2+3*(b1-b2)**2);}
+function pickColor(){
+  const used=Object.values(S.nets).map(n=>n.color);
+  if(!used.length)return FULL_PAL[0];
+  let best=FULL_PAL[0],bd=-1;
+  for(const c of FULL_PAL){
+    if(used.includes(c))continue;
+    const d=Math.min(...used.map(u=>cDist(c,u)));
+    if(d>bd){bd=d;best=c;}
+  }
+  return best;
+}
+function pcbColor(i){const e=Object.values(S.nets).find(n=>n.pcbIdx===i);return e?e.color:pickColor();}
+function h2r(hex,a){const[r,g,b]=hRgb(hex);return`rgba(${r},${g},${b},${a})`;}
+
+// ═══════════════════ CONSTANTS ═══════════════════════════════════════
+const N_PCB=16;
+function pcbIdx(id){return id.startsWith('pcb-')?parseInt(id.slice(4)):-1;}
+
+// ═══════════════════ UNSAVED + AUTO-VERSION ══════════════════════════
+let isDirty=false;
+function markDirty(){if(!isDirty){isDirty=true;document.title='* CB Matrix';const si=document.getElementById('save-ind');if(si)si.style.display='flex';}}
+function markClean(){isDirty=false;document.title='CB Matrix';const si=document.getElementById('save-ind');if(si)si.style.display='none';}
+window.addEventListener('beforeunload',e=>{if(isDirty){e.preventDefault();e.returnValue='';}});
+function parseRev(s){const m=(s||'').match(/(\d+)\s*$/);return m?parseInt(m[1]):0;}
+function bumpRev(s){const n=parseRev(s);const m=(s||'').match(/^(.*?)(\d+)\s*$/);return m?m[1]+(n+1):'v'+(n+1);}
+
+// ═══════════════════ STATE ══════════════════════════════════════════
+function fresh(){return{conns:[],nets:{},nc:0,notes:{},pcbLabels:Array(N_PCB).fill(''),potValues:{P1:'',P2:''}};}
+function clone(s){return{
+  conns:s.conns.map(c=>({...c})),
+  nets:Object.fromEntries(Object.entries(s.nets).map(([k,v])=>[k,{color:v.color,dots:new Set(v.dots),pcbIdx:v.pcbIdx}])),
+  nc:s.nc,notes:{...s.notes},pcbLabels:[...s.pcbLabels],potValues:{...s.potValues}
+};}
+let S=fresh(),undos=[],redos=[];
+function pu(){undos.push(clone(S));redos=[];if(undos.length>30)undos.shift();markDirty();}
+function undoLast(){if(!undos.length){st('Nothing to undo.');return;}redos.push(clone(S));S=undos.pop();rebuildUI();drawLines();st('Undo!');}
+function redoLast(){if(!redos.length){st('Nothing to redo.');return;}undos.push(clone(S));S=redos.pop();rebuildUI();drawLines();st('Redo!');}
+function clearAll(){pu();S=fresh();closeSheet('meta-ov');rebuildUI();drawLines();st('Cleared.');}
+
+// ═══════════════════ NET HELPERS ════════════════════════════════════
+function netsOf(id){return Object.keys(S.nets).filter(k=>S.nets[k].dots.has(id));}
+function connsOf(id){return S.conns.map((c,i)=>({c,i})).filter(({c})=>c.from===id||c.to===id);}
+function rebuildNet(nid){
+  if(!S.nets[nid])return;
+  const s=new Set();S.conns.forEach(c=>{if(c.net===nid){s.add(c.from);s.add(c.to);}});
+  S.nets[nid].dots=s;if(!s.size)delete S.nets[nid];
+}
+
+// ═══════════════════ MODE ════════════════════════════════════════════
+let mode='connect',sel=null,selNet=null,hlNets=new Set(),aNoteIdx=null,aColorNet=null;
+function setMode(m){
+  if(mode==='highlight'&amp;&amp;m!=='highlight')hlNets.clear();
+  mode=m;sel=null;selNet=null;
+  document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));
+  const tb=document.getElementById('tab-'+m);if(tb)tb.classList.add('active');
+  rebuildUI();drawLines();
+  const msgs={connect:'Tap a dot to start',highlight:'Tap dot to trace nets',note:'Tap dot to annotate',delete:'Tap dot to delete',recolor:'Tap dot to recolor'};
+  st(msgs[m]||'');
+}
+let stT;
+function st(msg){const e=document.getElementById('st');e.textContent=msg;e.classList.add('show');clearTimeout(stT);stT=setTimeout(()=>e.classList.remove('show'),2500);}
+
+// ═══════════════════ DOT TAP ════════════════════════════════════════
+function onTap(id){
+  if(mode==='highlight'){
+    const ns=netsOf(id);if(!ns.length){st('No connections.');return;}
+    if(ns.length===1){hlNets.has(ns[0])?hlNets.delete(ns[0]):hlNets.add(ns[0]);rebuildUI();drawLines();return;}
+    pickNet('Highlight net',[{label:'All on this pin',color:'#00ffc8',value:'__all__',sub:''},...npi(id,ns)],val=>{
+      if(val==='__all__'){const all=ns.every(n=>hlNets.has(n));ns.forEach(n=>all?hlNets.delete(n):hlNets.add(n));}
+      else{hlNets.has(val)?hlNets.delete(val):hlNets.add(val);}rebuildUI();drawLines();});return;
+  }
+  if(mode==='delete'){
+    const ci=connsOf(id);if(!ci.length){st('No connections.');return;}
+    if(ci.length===1){doDel(ci[0].i);return;}
+    pickNet('Delete which?',ci.map(({c,i})=>({label:c.from===id?c.to:c.from,color:S.nets[c.net]?.color||'#888',value:i,sub:''})),doDel);return;
+  }
+  if(mode==='note'){
+    const ci=connsOf(id);if(!ci.length){st('No connections.');return;}
+    if(ci.length===1){openNote(ci[0].i);return;}
+    pickNet('Note which?',ci.map(({c,i})=>({label:c.from===id?c.to:c.from,color:S.nets[c.net]?.color||'#888',value:i,sub:''})),openNote);return;
+  }
+  if(mode==='recolor'){
+    const ns=netsOf(id);if(!ns.length){st('No connections.');return;}
+    if(ns.length===1){openColor(ns[0]);return;}
+    pickNet('Recolor which?',npi(id,ns),openColor);return;
+  }
+  // connect
+  if(!sel){
+    const en=netsOf(id);
+    if(en.length>1){
+      pickNet('Continue which net?',[{label:'New separate net',color:'#00ffc8',value:'__new__',sub:'new color'},...npi(id,en)],val=>{
+        sel=id;selNet=val==='__new__'?'__new__':val;pulseDot(id);rebuildUI();st('Selected — tap target');});return;
+    }
+    sel=id;selNet=null;pulseDot(id);rebuildUI();st('Tap target dot');
+  } else if(sel===id){
+    sel=null;selNet=null;rebuildUI();st('Deselected.');
+  } else {
+    const fid=sel,tid=id,sn=selNet;sel=null;selNet=null;
+    if(S.conns.some(c=>(c.from===fid&amp;&amp;c.to===tid)||(c.from===tid&amp;&amp;c.to===fid))){rebuildUI();st('Already connected.');return;}
+    pu();
+    let nid;
+    if(sn&amp;&amp;sn!=='__new__'&amp;&amp;S.nets[sn]){nid=sn;S.nets[nid].dots.add(fid);S.nets[nid].dots.add(tid);}
+    else if(sn==='__new__'){
+      const pi=pcbIdx(fid)>=0?pcbIdx(fid):pcbIdx(tid)>=0?pcbIdx(tid):-1;
+      nid='n'+(++S.nc);S.nets[nid]={color:pi>=0?pcbColor(pi):pickColor(),dots:new Set([fid,tid]),pcbIdx:pi};
+    } else {
+      const pf=pcbIdx(fid),pt=pcbIdx(tid),nf=netsOf(fid);
+      if(pf>=0){const ex=Object.entries(S.nets).find(([,v])=>v.pcbIdx===pf)?.[0];if(ex){nid=ex;S.nets[nid].dots.add(fid);S.nets[nid].dots.add(tid);}else{nid='n'+(++S.nc);S.nets[nid]={color:pcbColor(pf),dots:new Set([fid,tid]),pcbIdx:pf};}}
+      else if(nf.length===1){nid=nf[0];S.nets[nid].dots.add(tid);}
+      else if(!nf.length){if(pt>=0){const ex=Object.entries(S.nets).find(([,v])=>v.pcbIdx===pt)?.[0];if(ex){nid=ex;S.nets[nid].dots.add(fid);S.nets[nid].dots.add(tid);}else{nid='n'+(++S.nc);S.nets[nid]={color:pcbColor(pt),dots:new Set([fid,tid]),pcbIdx:pt};}}else{nid='n'+(++S.nc);S.nets[nid]={color:pickColor(),dots:new Set([fid,tid]),pcbIdx:-1};}}
+    }
+    if(nid){S.nets[nid].dots.add(fid);S.nets[nid].dots.add(tid);S.conns.push({from:fid,to:tid,net:nid});}
+    rebuildUI();drawLines();st('Connected! ('+S.conns.length+')');
+  }
+}
+
+function doDel(idx){
+  pu();const net=S.conns[idx].net;S.conns.splice(idx,1);
+  const nn={};Object.entries(S.notes).forEach(([k,v])=>{const ki=parseInt(k);if(ki<idx)nn[k]=v;else if(ki>idx)nn[''+(ki-1)]=v;});
+  S.notes=nn;rebuildNet(net);hlNets.delete(net);rebuildUI();drawLines();st('Deleted.');
+}
+
+// ═══════════════════ NET PICKER ══════════════════════════════════════
+function npi(dotId,netIds){
+  return netIds.map(nid=>{
+    const net=S.nets[nid];
+    const lbl=net?.pcbIdx>=0?(S.pcbLabels[net.pcbIdx]?.trim()||''):'';
+    return{label:lbl,color:net?.color||'#888',value:nid,sub:net?.pcbIdx<0?'no PCB':''};
+  });
+}
+function pickNet(title,items,cb){
+  document.getElementById('np-title').textContent=title;
+  const cont=document.getElementById('np-items');cont.innerHTML='';
+  items.forEach(it=>{
+    const row=document.createElement('div');row.className='s-item';
+    const sw=document.createElement('div');sw.className='s-swatch';sw.style.background=it.color;
+    const lbl=document.createElement('div');lbl.style.flex='1';lbl.textContent=it.label||'';
+    if(it.sub){const s=document.createElement('div');s.className='s-sub';s.textContent=it.sub;lbl.appendChild(s);}
+    row.appendChild(sw);row.appendChild(lbl);
+    row.addEventListener('click',()=>{closeSheet('netpick-ov');cb(it.value);});
+    cont.appendChild(row);
+  });
+  openSheet('netpick-ov');
+}
+
+// ═══════════════════ NOTE ════════════════════════════════════════════
+function openNote(idx){
+  aNoteIdx=idx;const c=S.conns[idx];
+  document.getElementById('nfrom').textContent=c?c.from+' → '+c.to:'';
+  document.getElementById('ntxt').value=S.notes[''+idx]||'';
+  openSheet('note-ov');setTimeout(()=>document.getElementById('ntxt').focus(),300);
+}
+function saveNote(){
+  const txt=document.getElementById('ntxt').value.trim();
+  if(aNoteIdx!==null){pu();if(txt)S.notes[''+aNoteIdx]=txt;else delete S.notes[''+aNoteIdx];}
+  closeSheet('note-ov');rebuildUI();drawLines();aNoteIdx=null;
+}
+document.getElementById('ntxt').addEventListener('keydown',e=>{if(e.key==='Enter'&amp;&amp;!e.shiftKey){e.preventDefault();saveNote();}});
+
+// ═══════════════════ COLOR ════════════════════════════════════════════
+function openColor(nid){
+  aColorNet=nid;const col=S.nets[nid]?.color||'#888';
+  document.getElementById('cprev').style.background=col;document.getElementById('cpick').value=col;openSheet('color-ov');
+}
+function onColorInput(v){if(!aColorNet)return;pu();S.nets[aColorNet].color=v;document.getElementById('cprev').style.background=v;rebuildUI();drawLines();}
+
+// ═══════════════════ SHEETS ══════════════════════════════════════════
+function openSheet(id){document.getElementById(id).classList.add('open');}
+function closeSheet(id){document.getElementById(id).classList.remove('open');}
+
+// ═══════════════════ PCB EDIT ════════════════════════════════════════
+function openPcbEdit(){
+  // Populate pot value fields
+  document.getElementById('pv1').value=S.potValues.P1||'';
+  document.getElementById('pv2').value=S.potValues.P2||'';
+  const cont=document.getElementById('pcb-edit-rows');cont.innerHTML='';
+  for(let i=0;i<N_PCB;i++){
+    const ns=netsOf('pcb-'+i);const col=ns.length&amp;&amp;S.nets[ns[0]]?S.nets[ns[0]].color:'#333';
+    const row=document.createElement('div');row.className='pcb-edit-row';
+    const num=document.createElement('div');num.className='pcb-edit-num';num.textContent=i+1;
+    const dot=document.createElement('div');dot.className='pcb-edit-dot';dot.style.background=col;
+    const inp=document.createElement('input');inp.className='pcb-edit-inp';inp.placeholder='label…';
+    inp.value=S.pcbLabels[i]||'';inp.dataset.idx=i;
+    row.appendChild(num);row.appendChild(dot);row.appendChild(inp);cont.appendChild(row);
+  }
+  openSheet('pcb-ov');
+}
+function savePcbLabels(){
+  S.potValues.P1=document.getElementById('pv1').value;
+  S.potValues.P2=document.getElementById('pv2').value;
+  document.querySelectorAll('.pcb-edit-inp[data-idx]').forEach(inp=>{S.pcbLabels[parseInt(inp.dataset.idx)]=inp.value;});
+  closeSheet('pcb-ov');rebuildUI();drawLines();
+}
+
+// ═══════════════════ DOT SVG ═════════════════════════════════════════
+const DOT_R=11;
+const svgMap={};
+function makeDotSvg(id){
+  const sz=DOT_R*2+6,NS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(NS,'svg');
+  svg.setAttribute('width',sz);svg.setAttribute('height',sz);svg.setAttribute('viewBox',`0 0 ${sz} ${sz}`);
+  svg.style.cssText='display:block;cursor:pointer;touch-action:manipulation;overflow:visible;';
+  svg.addEventListener('click',e=>{e.stopPropagation();onTap(id);});
+  return svg;
+}
+function updDot(svg,id){
+  const sz=DOT_R*2+6,cx=sz/2,cy=sz/2,r=DOT_R,NS='http://www.w3.org/2000/svg';
+  svg.innerHTML='';
+  const nets=netsOf(id),isSel=id===sel,hasHL=hlNets.size>0,isHL=nets.some(n=>hlNets.has(n)),dim=hasHL&amp;&amp;!isHL&amp;&amp;nets.length>0;
+  if(!nets.length){
+    const c=document.createElementNS(NS,'circle');c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);
+    c.setAttribute('fill','white');c.setAttribute('stroke','#333');c.setAttribute('stroke-width','1.6');svg.appendChild(c);
+  } else if(nets.length===1){
+    const col=S.nets[nets[0]]?.color||'#888';
+    const c=document.createElementNS(NS,'circle');c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);
+    c.setAttribute('fill',h2r(col,dim?.06:.3));c.setAttribute('stroke',dim?'#444':col);c.setAttribute('stroke-width','2');svg.appendChild(c);
+  } else {
+    const step=Math.PI*2/nets.length;
+    nets.forEach((nid,i)=>{
+      const col=S.nets[nid]?.color||'#888';
+      const a1=i*step-Math.PI/2,a2=(i+1)*step-Math.PI/2;
+      const p=document.createElementNS(NS,'path');
+      p.setAttribute('d',`M${cx},${cy} L${cx+r*Math.cos(a1)},${cy+r*Math.sin(a1)} A${r},${r} 0 0,1 ${cx+r*Math.cos(a2)},${cy+r*Math.sin(a2)} Z`);
+      p.setAttribute('fill',dim?h2r(col,.06):col);svg.appendChild(p);
+    });
+    const c=document.createElementNS(NS,'circle');c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);
+    c.setAttribute('fill','none');c.setAttribute('stroke','rgba(0,0,0,.2)');c.setAttribute('stroke-width','1');svg.appendChild(c);
+  }
+  if(isSel){
+    const ring=document.createElementNS(NS,'circle');ring.setAttribute('cx',cx);ring.setAttribute('cy',cy);ring.setAttribute('r',r+3);
+    ring.setAttribute('fill','none');ring.setAttribute('stroke','#00ffc8');ring.setAttribute('stroke-width','2');svg.appendChild(ring);
+  }
+}
+function pulseDot(id){
+  const wrap=document.querySelector(`.dot-wrap[data-id=&quot;${id}&quot;]`);if(!wrap)return;
+  const p=document.createElement('div');p.className='sel-pulse';
+  const sz=DOT_R*2+6;p.style.cssText=`width:${sz}px;height:${sz}px;`;wrap.appendChild(p);setTimeout(()=>p.remove(),600);
+}
+
+// ═══════════════════ GET DOT SCREEN POSITION ════════════════════════
+function dotPos(id){
+  // Find the SVG element directly for accurate center measurement
+  const svg=document.querySelector(`.dot-wrap[data-id=&quot;${id}&quot;] svg`);
+  if(!svg) return null;
+  const svgR=svg.getBoundingClientRect();
+  const matR=document.getElementById('matrix-wrap').getBoundingClientRect();
+  const scrollTop=document.getElementById('main').scrollTop;
+  return{
+    x: svgR.left - matR.left + svgR.width/2,
+    y: svgR.top  - matR.top  + svgR.height/2 + scrollTop
+  };
+}
+
+// ═══════════════════ DRAW LINES ══════════════════════════════════════
+function drawLines(){
+  const wrap=document.getElementById('matrix-wrap');
+  const dpr=window.devicePixelRatio||1;
+  const W=wrap.offsetWidth, H=wrap.offsetHeight;
+
+  // Size both canvases identically
+  [document.getElementById('line-canvas'), document.getElementById('line-canvas-front')].forEach(c=>{
+    c.width=W*dpr; c.height=H*dpr;
+    c.style.width=W+'px'; c.style.height=H+'px';
+  });
+
+  // Draw all lines on the FRONT canvas (z-index 25, above dots and cells)
+  const canvas=document.getElementById('line-canvas-front');
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  const hasHL=hlNets.size>0;
+
+  S.conns.forEach((conn,ci)=>{
+    const p1=dotPos(conn.from), p2=dotPos(conn.to);
+    if(!p1||!p2) return;
+    const net=S.nets[conn.net];
+    if(!net) return;
+    const color=net.color;
+    const isHL=hlNets.has(conn.net);
+    const dim=hasHL&amp;&amp;!isHL;
+    const alpha=dim?0.12:1;
+    const lw=isHL?3:1.8;
+
+    ctx.save();
+    ctx.globalAlpha=alpha;
+    ctx.strokeStyle=color;
+    ctx.lineWidth=lw;
+    ctx.lineJoin='round';
+    ctx.lineCap='round';
+
+    // L-shaped route: horizontal then vertical then horizontal
+    // Use midpoint x
+    const midX=(p1.x+p2.x)/2;
+    ctx.beginPath();
+    ctx.moveTo(p1.x,p1.y);
+    ctx.lineTo(midX,p1.y);
+    ctx.lineTo(midX,p2.y);
+    ctx.lineTo(p2.x,p2.y);
+    ctx.stroke();
+
+    // Glow for highlighted
+    if(isHL){
+      ctx.globalAlpha=0.15;ctx.lineWidth=lw+5;
+      ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(midX,p1.y);ctx.lineTo(midX,p2.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();
+    }
+
+    // Note diamond
+    if(S.notes[''+ci]){
+      const mx=(p1.x+p2.x)/2, my=(p1.y+p2.y)/2;
+      const ds=5;
+      ctx.globalAlpha=dim?0.2:1;ctx.fillStyle=color;ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(mx,my-ds);ctx.lineTo(mx+ds,my);ctx.lineTo(mx,my+ds);ctx.lineTo(mx-ds,my);ctx.closePath();
+      ctx.fill();ctx.stroke();
+      ctx.fillStyle='#fff';ctx.font='bold 6px monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('!',mx,my);
+    }
+    ctx.restore();
+  });
+}
+
+// ═══════════════════ BUILD UI ════════════════════════════════════════
+function buildSwitches(){
+  for(let sw=0;sw<9;sw++){
+    const col=sw%3,row=Math.floor(sw/3);
+    const cell=document.getElementById(`sw-r${row}c${col}`);cell.innerHTML='';
+    const lbl=document.createElement('div');lbl.className='sw-lbl';lbl.textContent='SW'+(sw+1);cell.appendChild(lbl);
+    for(let p=1;p<=3;p++){
+      const id=`sw${sw+1}-${p}`;
+      const wrap=document.createElement('div');wrap.className='dot-wrap';wrap.dataset.id=id;wrap.style.cssText='align-items:center;';
+      const svg=makeDotSvg(id);svgMap[id]=svg;updDot(svg,id);wrap.appendChild(svg);
+      connsOf(id).forEach(({i})=>{if(S.notes[''+i]){const b=document.createElement('div');b.className='nbadge';wrap.appendChild(b);}});
+      cell.appendChild(wrap);
+    }
+  }
+}
+
+function buildPots(){
+  const col=document.getElementById('pot-col');col.innerHTML='';
+  ['P1','P2'].forEach(pot=>{
+    const grp=document.createElement('div');grp.className='pot-grp';
+    const lbl=document.createElement('div');lbl.className='pot-lbl';lbl.textContent=pot;grp.appendChild(lbl);
+    const pv=S.potValues[pot];
+    if(pv){const v=document.createElement('div');v.className='pot-val-txt';v.title=pv;v.textContent=pv;grp.appendChild(v);}
+    for(let p=1;p<=3;p++){
+      const id=`${pot}-${p}`;
+      const wrap=document.createElement('div');wrap.className='dot-wrap';wrap.dataset.id=id;
+      const svg=makeDotSvg(id);svgMap[id]=svg;updDot(svg,id);wrap.appendChild(svg);
+      const pn=document.createElement('div');pn.style.cssText='font-size:.36rem;color:var(--dim);text-align:center;line-height:1;';pn.textContent='.'+p;wrap.appendChild(pn);
+      grp.appendChild(wrap);
+    }
+    col.appendChild(grp);
+  });
+}
+
+function buildPcb(){
+  const col=document.getElementById('pcb-col');col.innerHTML='';
+  for(let i=0;i<N_PCB;i++){
+    const id='pcb-'+i;
+    const row=document.createElement('div');row.className='pcb-row-m';
+    const num=document.createElement('div');num.className='pcb-num';num.textContent=i+1;
+    const wrap=document.createElement('div');wrap.className='dot-wrap';wrap.dataset.id=id;
+    const svg=makeDotSvg(id);svgMap[id]=svg;updDot(svg,id);wrap.appendChild(svg);
+    connsOf(id).forEach(({i:ci})=>{if(S.notes[''+ci]){const b=document.createElement('div');b.className='nbadge';wrap.appendChild(b);}});
+    const lbl=document.createElement('div');lbl.className='pcb-lbl';lbl.title=S.pcbLabels[i]||'';lbl.textContent=S.pcbLabels[i]||'';
+    row.appendChild(num);row.appendChild(wrap);row.appendChild(lbl);col.appendChild(row);
+  }
+}
+
+function rebuildUI(){
+  buildSwitches();buildPots();buildPcb();
+  Object.entries(svgMap).forEach(([id,svg])=>updDot(svg,id));
+  // Redraw lines after layout settles
+  requestAnimationFrame(()=>requestAnimationFrame(drawLines));
+}
+
+// ═══════════════════ SAVE / LOAD ═════════════════════════════════════
+function saveProject(){
+  // Sync pot values from edit sheet if open
+  const pv1=document.getElementById('pv1');const pv2=document.getElementById('pv2');
+  if(pv1)S.potValues.P1=pv1.value;if(pv2)S.potValues.P2=pv2.value;
+  // Auto-bump revision
+  const revEl=document.getElementById('mr');
+  const newRev=bumpRev(revEl.value);
+  revEl.value=newRev;
+  const d={meta:{project:document.getElementById('mp').value,date:document.getElementById('md').value,rev:newRev},
+    pcbLabels:S.pcbLabels,potValues:S.potValues,conns:S.conns.map(c=>({...c})),notes:S.notes,
+    nets:Object.fromEntries(Object.entries(S.nets).map(([k,v])=>[k,{color:v.color,dots:[...v.dots],pcbIdx:v.pcbIdx}])),nc:S.nc};
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));
+  a.download=((d.meta.project||'matrix').replace(/\s+/g,'_').toLowerCase())+'_v'+parseRev(newRev)+'_cbmatrix.json';
+  a.click();URL.revokeObjectURL(a.href);closeSheet('meta-ov');markClean();st('Saved! ('+newRev+')');
+}
+function onLoad(e){
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      document.getElementById('mp').value=d.meta?.project||'';
+      document.getElementById('md').value=d.meta?.date||'';
+      document.getElementById('mr').value=d.meta?.rev||'';
+      pu();
+      S.pcbLabels=d.pcbLabels||Array(N_PCB).fill('');
+      S.potValues=d.potValues||{P1:'',P2:''};
+      S.conns=d.conns||[];S.notes=d.notes||{};
+      S.nets=Object.fromEntries(Object.entries(d.nets||{}).map(([k,v])=>[k,{color:v.color,dots:new Set(v.dots),pcbIdx:v.pcbIdx}]));
+      S.nc=d.nc||0;hlNets.clear();rebuildUI();closeSheet('meta-ov');markClean();st('Loaded! ('+d.meta?.rev+')');
+    }catch(err){st('Error: '+err.message);}
+  };
+  rd.readAsText(f);e.target.value='';
+}
+
+// Redraw on resize
+window.addEventListener('resize',()=>{rebuildUI();});
+
+// ═══════════════════ INIT ════════════════════════════════════════════
+rebuildUI();
+setMode('connect');
+</script>
+</body>
+</html>
+"></iframe>
+<script>
+function load(w){const f=document.getElementById('frame');f.srcdoc=f.dataset[w];f.style.display='block';document.getElementById('chooser').style.display='none';}
+function isMobile(){return window.innerWidth<=900||(window.matchMedia('(pointer:coarse)').matches&&window.innerWidth<=1200);}
+setTimeout(()=>{load(isMobile()?'mobile':'desktop');},50);
+</script>
+</body>
+</html>
