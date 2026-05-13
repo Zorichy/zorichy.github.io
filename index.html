@@ -1946,7 +1946,7 @@ function buildPots(){
     const pv=S.potValues[pot];
     if(pv){const v=document.createElement('div');v.className='pot-val-txt';v.title=pv;v.textContent=pv;grp.appendChild(v);}
     for(let p=1;p<=3;p++){
-      const id=`${pot}-${p}`;
+      const id=`${pot.toLowerCase()}-${p}`;
       const wrap=document.createElement('div');wrap.className='dot-wrap';wrap.dataset.id=id;
       const svg=makeDotSvg(id);svgMap[id]=svg;updDot(svg,id);wrap.appendChild(svg);
       const pn=document.createElement('div');pn.style.cssText='font-size:.36rem;color:var(--dim);text-align:center;line-height:1;';pn.textContent='.'+p;wrap.appendChild(pn);
@@ -2008,7 +2008,15 @@ function onLoad(e){
       S.potValues=d.potValues||{P1:'',P2:''};
       S.conns=d.conns||[];S.notes=d.notes||{};
       S.nets=Object.fromEntries(Object.entries(d.nets||{}).map(([k,v])=>[k,{color:v.color,dots:new Set(v.dots),pcbIdx:v.pcbIdx}]));
-      S.nc=d.nc||0;hlNets.clear();rebuildUI();closeSheet('meta-ov');markClean();st('Loaded! ('+d.meta?.rev+')');
+      S.nc=d.nc||0;hlNets.clear();
+      // Normalise pot pin IDs: desktop saves as 'p1-1','p2-3' (lowercase),
+      // mobile renders as 'P1-1','P2-3' (uppercase). Fix all references.
+      function normId(id){return id.replace(/^([Pp][12]-)(\d)$/,(_,a,b)=>a.toLowerCase()+b);}
+      S.conns.forEach(c=>{c.from=normId(c.from);c.to=normId(c.to);});
+      Object.values(S.nets).forEach(net=>{
+        const newDots=new Set();net.dots.forEach(d=>newDots.add(normId(d)));net.dots=newDots;
+      });
+      rebuildUI();closeSheet('meta-ov');markClean();st('Loaded! ('+d.meta?.rev+')');
     }catch(err){st('Error: '+err.message);}
   };
   rd.readAsText(f);e.target.value='';
@@ -2022,111 +2030,193 @@ function toggleExportSub(){
   btn.textContent=open?'📤 Export ▴':'📤 Export ▾';
 }
 
-// ═══════════════════ EXPORT ══════════════════════════════════════════
-// Same A4 canvas as desktop: title + matrix screenshot + notes inside
-const A4W=2338, A4H=1653;
-
+// ═══════════════════ EXPORT — pure canvas, desktop layout ════════════════
+const A4W=2338,A4H=1653;
+function toggleExportSub(){
+  const sub=document.getElementById('export-sub');
+  const btn=document.getElementById('export-toggle');
+  const open=sub.style.display==='none';
+  sub.style.display=open?'block':'none';
+  btn.textContent=open?'📤 Export ▴':'📤 Export ▾';
+}
 function getFullTitle(){
   const proj=document.getElementById('mp').value.trim();
   const rev=document.getElementById('mr').value.trim();
   let t='\u26a1 CIRCUITBENDING MATRIX';
-  if(proj||rev){t+=` \u2014 `;if(proj)t+=proj;if(proj&amp;&amp;rev)t+=' \xb7 ';if(rev)t+=rev;}
+  if(proj||rev){t+=' \u2014 ';if(proj)t+=proj;if(proj&amp;&amp;rev)t+=' \xb7 ';if(rev)t+=rev;}
   return t;
 }
-
 function getName(){
   return (document.getElementById('mp').value||'matrix').replace(/\s+/g,'_')
     +'_v'+parseRev(document.getElementById('mr').value);
 }
-
-function buildExportCanvas(cb){
-  const matEl=document.getElementById('matrix-wrap');
-  const matW=matEl.offsetWidth, matH=matEl.offsetHeight;
-
-  // Notes entries
+function drawDesktopMatrix(ctx,scale){
+  const MW=1240,MH=840,SEC_H=26,CT=SEC_H+14,CB_Y=MH-12,CH=CB_Y-CT;
+  const POT_DIV=Math.round(MW*.24),LEG_DIV=Math.round(MW*.77);
+  const SW_LEFT=POT_DIV+28,SW_RIGHT=LEG_DIV-28,SW_W=46,SW_H=98;
+  const sw_hg=Math.round((SW_RIGHT-SW_LEFT-3*SW_W)/4);
+  const sw_vg=Math.round((CH-3*SW_H)/4);
+  const sw_xs=[0,1,2].map(c=>SW_LEFT+sw_hg+c*(SW_W+sw_hg));
+  const sw_ys=[0,1,2].map(r=>CT+sw_vg+r*(SW_H+sw_vg));
+  const R=70,row_cy=sw_ys.map(y=>y+SW_H/2);
+  const p1_cy=Math.round((row_cy[0]+row_cy[1])/2),p2_cy=Math.round((row_cy[1]+row_cy[2])/2);
+  const POT_CX=Math.round(POT_DIV/2)+8,PIN_DYS=[-32,0,32];
+  const LEG_DOT_X=LEG_DIV+24,N_LEG=16,leg_sp=Math.round(CH/(N_LEG+1));
+  ctx.save();ctx.scale(scale,scale);
+  // White background + border
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,MW,MH);
+  ctx.strokeStyle='#222';ctx.lineWidth=2;ctx.strokeRect(0,0,MW,MH);
+  // Section headers
+  ctx.font='bold 13px &quot;Orbitron&quot;,sans-serif';ctx.fillStyle='#111';ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText('POTENTIOMETERS',POT_DIV/2,5);
+  ctx.fillText('MTS-103 SWITCHES',(POT_DIV+LEG_DIV)/2,5);
+  ctx.fillText('PCB CONNECTIONS',(LEG_DIV+MW)/2,5);
+  // Dashed dividers
+  ctx.setLineDash([8,5]);ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;
+  [POT_DIV,LEG_DIV].forEach(x=>{ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,MH);ctx.stroke();});
+  ctx.setLineDash([]);
+  // Switch boxes
+  for(let i=0;i<9;i++){
+    const col=i%3,row=Math.floor(i/3),sx=sw_xs[col],sy=sw_ys[row];
+    ctx.strokeStyle='#111';ctx.lineWidth=2.5;ctx.strokeRect(sx,sy,SW_W,SW_H);
+    ctx.font='bold 11px &quot;Orbitron&quot;,sans-serif';ctx.fillStyle='#111';ctx.textAlign='center';ctx.textBaseline='bottom';
+    ctx.fillText('SW'+(i+1),sx+SW_W/2,sy-4);
+    [0.18,0.50,0.82].forEach((f,pi)=>{
+      ctx.font='9px &quot;Share Tech Mono&quot;,monospace';ctx.fillStyle='#555';ctx.textAlign='right';ctx.textBaseline='middle';
+      ctx.fillText(pi+1,sx-3,sy+SW_H*f);
+    });
+  }
+  // Pot circles
+  [{cy:p1_cy,lbl:'P1'},{cy:p2_cy,lbl:'P2'}].forEach(({cy,lbl})=>{
+    ctx.beginPath();ctx.arc(POT_CX,cy,R,0,Math.PI*2);ctx.fillStyle='white';ctx.fill();
+    ctx.strokeStyle='#111';ctx.lineWidth=2.5;ctx.stroke();
+    ctx.font='bold 16px &quot;Orbitron&quot;,sans-serif';ctx.fillStyle='#111';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(lbl,POT_CX,cy);
+    const pv=S.potValues?.[lbl]||'';
+    if(pv){ctx.font='bold 13px &quot;Share Tech Mono&quot;,monospace';ctx.fillStyle='#555';ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText(pv,POT_CX,cy+R+10);}
+  });
+  // Pot pin labels
+  [{cy:p1_cy,lbl:'P1'},{cy:p2_cy,lbl:'P2'}].forEach(({cy,lbl})=>{
+    PIN_DYS.forEach((dy,i)=>{
+      const ang=Math.atan2(dy,R),ex=Math.round(POT_CX+R*Math.cos(ang)),ey=cy+dy;
+      ctx.font='9px &quot;Share Tech Mono&quot;,monospace';ctx.fillStyle='#555';ctx.textAlign='center';ctx.textBaseline='bottom';
+      ctx.fillText(lbl+'.'+(i+1),ex+54,ey-2);
+    });
+  });
+  // PCB labels
+  for(let i=0;i<N_LEG;i++){
+    const ly=CT+leg_sp*(i+1),lbl=S.pcbLabels[i]||'';
+    if(lbl){ctx.font='bold 13px &quot;Share Tech Mono&quot;,monospace';ctx.fillStyle='#111';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(lbl,LEG_DOT_X+16,ly);}
+    ctx.strokeStyle='#ccc';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(LEG_DOT_X+16,ly+9);ctx.lineTo(LEG_DOT_X+104,ly+9);ctx.stroke();
+    ctx.font='11px &quot;Share Tech Mono&quot;,monospace';ctx.fillStyle='#aaa';ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText(i+1,LEG_DOT_X+14,ly);
+  }
+  // Routing
+  const VSLOTS=6,gaps=[[SW_LEFT+2,sw_xs[0]-2],[sw_xs[0]+SW_W+2,sw_xs[1]-2],[sw_xs[1]+SW_W+2,sw_xs[2]-2],[sw_xs[2]+SW_W+2,SW_RIGHT-2]];
+  const VCHANS=[];gaps.forEach(([x1,x2])=>{for(let s=0;s<VSLOTS;s++)VCHANS.push(Math.round(x1+(x2-x1)*(s+0.5)/VSLOTS));});
+  function nodePos(id){
+    if(id.startsWith('pcb-')){const i=parseInt(id.slice(4));return{x:LEG_DOT_X,y:CT+leg_sp*(i+1)};}
+    if(id.startsWith('sw')){const m=id.match(/sw(\d+)-(\d+)/);const sw=parseInt(m[1])-1,pin=parseInt(m[2])-1;return{x:sw_xs[sw%3]+SW_W/2,y:sw_ys[Math.floor(sw/3)]+SW_H*[0.18,0.50,0.82][pin]};}
+    if(id.match(/[Pp][12]-[123]/)){const lbl=id[0].toUpperCase()+id[1],pn=parseInt(id[3])-1,cy=lbl==='P1'?p1_cy:p2_cy,dy=PIN_DYS[pn];return{x:Math.round(POT_CX+R*Math.cos(Math.atan2(dy,R)))+54,y:cy+dy};}
+    return{x:0,y:0};
+  }
+  function entryPos(id){
+    if(id.match(/[Pp][12]-[123]/)){const lbl=id[0].toUpperCase()+id[1],pn=parseInt(id[3])-1,cy=lbl==='P1'?p1_cy:p2_cy,dy=PIN_DYS[pn];return{x:Math.round(POT_CX+R*Math.cos(Math.atan2(dy,R))),y:cy+dy};}
+    return nodePos(id);
+  }
+  const vOcc=VCHANS.map(()=>[]),routes=[];
+  S.conns.forEach((conn,ci)=>{
+    const color=S.nets[conn.net]?.color||'#aaa';
+    const A=entryPos(conn.from),B=entryPos(conn.to);
+    if(Math.abs(A.y-B.y)<2){routes.push({segs:[[A.x,A.y,B.x,B.y]],color,idx:ci});return;}
+    const yMin=Math.min(A.y,B.y),yMax=Math.max(A.y,B.y),idealX=(A.x+B.x)/2;
+    let bestV=-1,bestS=Infinity;
+    VCHANS.forEach((vx,vi)=>{if(vOcc[vi].some(s=>s.y1<yMax+3&amp;&amp;s.y2>yMin-3))return;const s=Math.abs(vx-idealX)+(vx>=Math.min(A.x,B.x)-10&amp;&amp;vx<=Math.max(A.x,B.x)+10?0:200);if(s<bestS){bestS=s;bestV=vi;}});
+    if(bestV===-1){const mx=(A.x+B.x)/2;routes.push({segs:[[A.x,A.y,mx,A.y],[mx,A.y,mx,B.y],[mx,B.y,B.x,B.y]],color,idx:ci});return;}
+    vOcc[bestV].push({y1:yMin,y2:yMax});routes.push({segs:[[A.x,A.y,VCHANS[bestV],A.y],[VCHANS[bestV],A.y,VCHANS[bestV],B.y],[VCHANS[bestV],B.y,B.x,B.y]],color,idx:ci});
+  });
+  // Pot stubs
+  [{cy:p1_cy,lbl:'p1'},{cy:p2_cy,lbl:'p2'}].forEach(({cy,lbl})=>{
+    PIN_DYS.forEach((dy,i)=>{
+      const ang=Math.atan2(dy,R),ex=Math.round(POT_CX+R*Math.cos(ang)),ey=cy+dy;
+      const nets=Object.keys(S.nets).filter(k=>S.nets[k].dots.has(lbl+'-'+(i+1)));
+      const col=nets.length?S.nets[nets[0]]?.color||'#555':'#555';
+      ctx.setLineDash([5,4]);ctx.strokeStyle=col;ctx.lineWidth=nets.length?2:1.5;
+      ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(ex+32,ey);ctx.stroke();
+      ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(ex+32,ey);ctx.lineTo(ex+54,ey);ctx.stroke();
+    });
+  });
+  // Lines
+  routes.forEach(({segs,color})=>{
+    ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
+    segs.forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();});
+    ctx.restore();
+  });
+  // Note diamonds
+  routes.forEach(({segs,color,idx})=>{
+    const note=S.notes[''+idx];if(!note)return;
+    const ms=segs[Math.floor(segs.length/2)],mx=(ms[0]+ms[2])/2,my=(ms[1]+ms[3])/2,ds=7;
+    ctx.save();ctx.fillStyle=color;ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(mx,my-ds);ctx.lineTo(mx+ds,my);ctx.lineTo(mx,my+ds);ctx.lineTo(mx-ds,my);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 8px monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('!',mx,my);ctx.restore();
+  });
+  // Dots
+  const allDots=[];for(let i=0;i<9;i++)for(let p=1;p<=3;p++)allDots.push('sw'+(i+1)+'-'+p);
+  for(let i=0;i<N_LEG;i++)allDots.push('pcb-'+i);
+  ['P1','P2'].forEach(pt=>[1,2,3].forEach(p=>allDots.push(pt+'-'+p)));
+  allDots.forEach(id=>{
+    const pos=nodePos(id),r=id.startsWith('pcb-')?7:6;
+    const nets=Object.keys(S.nets).filter(k=>S.nets[k].dots.has(id));
+    const colors=nets.map(n=>S.nets[n]?.color).filter(Boolean);
+    if(!colors.length){
+      ctx.beginPath();ctx.arc(pos.x,pos.y,r,0,Math.PI*2);ctx.fillStyle='white';ctx.fill();ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.stroke();
+    } else if(colors.length===1){
+      const [rr,gg,bb]=[parseInt(colors[0].slice(1,3),16),parseInt(colors[0].slice(3,5),16),parseInt(colors[0].slice(5,7),16)];
+      ctx.beginPath();ctx.arc(pos.x,pos.y,r,0,Math.PI*2);ctx.fillStyle=`rgba(${rr},${gg},${bb},0.3)`;ctx.fill();ctx.strokeStyle=colors[0];ctx.lineWidth=2.5;ctx.stroke();
+    } else {
+      const step=Math.PI*2/colors.length;
+      colors.forEach((col,i)=>{const a1=i*step-Math.PI/2,a2=(i+1)*step-Math.PI/2;ctx.beginPath();ctx.moveTo(pos.x,pos.y);ctx.arc(pos.x,pos.y,r,a1,a2);ctx.closePath();ctx.fillStyle=col;ctx.fill();});
+      ctx.beginPath();ctx.arc(pos.x,pos.y,r,0,Math.PI*2);ctx.strokeStyle='rgba(0,0,0,0.2)';ctx.lineWidth=1;ctx.stroke();
+    }
+  });
+  // Notes area (bottom of matrix, anchored to bottom)
+  const noteAreaTop=sw_ys[2]+SW_H+4,noteAreaBot=CB_Y-4,noteAreaLeft=POT_DIV+6;
   const noteEntries=Object.entries(S.notes).filter(([idx])=>S.conns[parseInt(idx)]);
-  const TITLE_H=56;
-  // Notes are inside the matrix screenshot (drawn by drawLines into canvas), no separate section needed
-  const availH=A4H-TITLE_H-32;
-  const scale=Math.min((A4W-32)/matW, availH/matH);
-  const mW=Math.round(matW*scale), mH=Math.round(matH*scale);
-
-  const out=document.createElement('canvas');
-  out.width=A4W; out.height=A4H;
-  const ctx=out.getContext('2d');
-  ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
-  ctx.fillStyle='#fff'; ctx.fillRect(0,0,A4W,A4H);
-
-  // Title
-  const TX=24, TY=16;
-  ctx.font='bold 24px Orbitron,monospace';
-  ctx.fillStyle='#111'; ctx.textBaseline='top'; ctx.textAlign='left';
-  ctx.fillText(getFullTitle(),TX,TY);
+  if(noteEntries.length>0&amp;&amp;noteAreaBot-noteAreaTop>14){
+    const LABEL_H=11,ROW_H=13,totalH=LABEL_H+noteEntries.length*ROW_H;
+    let y=noteAreaBot-totalH;if(y<noteAreaTop)y=noteAreaTop;
+    ctx.font='bold 8px &quot;Orbitron&quot;,sans-serif';ctx.fillStyle='#888';ctx.textBaseline='top';ctx.textAlign='left';ctx.fillText('NOTES',noteAreaLeft+4,y);y+=LABEL_H;
+    ctx.font='9px &quot;Share Tech Mono&quot;,monospace';
+    noteEntries.forEach(([idx,note])=>{
+      const conn=S.conns[parseInt(idx)];if(!conn||y+ROW_H>noteAreaBot)return;
+      const net=S.nets[conn.net],color=net?.color||'#888';
+      const from=conn.from.startsWith('pcb-')?(S.pcbLabels[parseInt(conn.from.slice(4))]||conn.from):conn.from;
+      const to=conn.to.startsWith('pcb-')?(S.pcbLabels[parseInt(conn.to.slice(4))]||conn.to):conn.to;
+      ctx.fillStyle=color;ctx.beginPath();ctx.arc(noteAreaLeft+7,y+ROW_H/2,3.5,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#222';ctx.fillText(from+' \u2192 '+to+': '+note.replace(/\n/g,' \xb7 '),noteAreaLeft+16,y+ROW_H/2-4);y+=ROW_H;
+    });
+  }
+  ctx.restore();
+}
+function buildExportCanvas(cb){
+  const MW=1240,MH=840,TITLE_H=56,availH=A4H-TITLE_H-32;
+  const scale=Math.min((A4W-32)/MW,availH/MH);
+  const mW=Math.round(MW*scale),mH=Math.round(MH*scale);
+  const out=document.createElement('canvas');out.width=A4W;out.height=A4H;
+  const ctx=out.getContext('2d');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,A4W,A4H);
+  const TX=24,TY=16;
+  ctx.font='bold 24px &quot;Orbitron&quot;,sans-serif';ctx.fillStyle='#111';ctx.textBaseline='top';ctx.textAlign='left';ctx.fillText(getFullTitle(),TX,TY);
   const date=document.getElementById('md').value.trim();
-  if(date){ctx.font='15px Share Tech Mono,monospace';ctx.fillStyle='#888';ctx.textAlign='right';ctx.fillText(date,A4W-TX,TY+6);ctx.textAlign='left';}
-  ctx.strokeStyle='#222';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(TX,TY+TITLE_H-8);ctx.lineTo(A4W-TX,TY+TITLE_H-8);ctx.stroke();
-
-  const matTop=TY+TITLE_H;
-  const matLeft=Math.round((A4W-mW)/2);
-
-  function doCapture(){
-    // Hide interaction canvas layer if present
-    const ci=document.getElementById('line-canvas-front');
-    if(ci)ci.style.pointerEvents='none';
-    html2canvas(matEl,{
-      scale:Math.max(3,scale*3),
-      useCORS:true,backgroundColor:'#ffffff',logging:false
-    }).then(domCanvas=>{
-      ctx.drawImage(domCanvas,matLeft,matTop,mW,mH);
-      cb(out);
-    }).catch(err=>{st('Export error: '+err.message);});
-  }
-
-  if(window.html2canvas){doCapture();}
-  else{
-    const s=document.createElement('script');
-    s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    s.onload=doCapture;
-    s.onerror=()=>st('Could not load export library — check internet.');
-    document.head.appendChild(s);
-  }
+  if(date){ctx.font='15px &quot;Share Tech Mono&quot;,monospace';ctx.fillStyle='#888';ctx.textAlign='right';ctx.fillText(date,A4W-TX,TY+6);ctx.textAlign='left';}
+  ctx.strokeStyle='#222';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(TX,TY+TITLE_H-8);ctx.lineTo(A4W-TX,TY+TITLE_H-8);ctx.stroke();
+  ctx.save();ctx.translate(Math.round((A4W-mW)/2),TY+TITLE_H);
+  drawDesktopMatrix(ctx,scale);
+  ctx.restore();
+  cb(out);
 }
-
-function exportPNG(){
-  document.getElementById('export-sub').style.display='none';
-  document.getElementById('export-toggle').textContent='📤 Export ▾';
-  closeSheet('meta-ov');
-  st('Generating PNG…');
-  buildExportCanvas(c=>{
-    const a=document.createElement('a');
-    a.download=getName()+'_export.png';
-    a.href=c.toDataURL('image/png');a.click();st('PNG exported!');
-  });
-}
-function exportJPEG(){
-  document.getElementById('export-sub').style.display='none';
-  document.getElementById('export-toggle').textContent='📤 Export ▾';
-  closeSheet('meta-ov');
-  st('Generating JPEG…');
-  buildExportCanvas(c=>{
-    const a=document.createElement('a');
-    a.download=getName()+'_export.jpg';
-    a.href=c.toDataURL('image/jpeg',.95);a.click();st('JPEG exported!');
-  });
-}
-function exportPDF(){
-  document.getElementById('export-sub').style.display='none';
-  document.getElementById('export-toggle').textContent='📤 Export ▾';
-  closeSheet('meta-ov');
-  st('Generating PDF…');
-  buildExportCanvas(c=>{
-    const win=window.open('','_blank');
-    win.document.write(`<!DOCTYPE html><html><head><meta charset=&quot;UTF-8&quot;><title>CB Matrix</title><style>@page{size:A4 landscape;margin:0;}body{margin:0;}img{width:100%;height:auto;display:block;}</style></head><body><img src=&quot;${c.toDataURL('image/png')}&quot;></body></html>`);
-    win.document.close();win.focus();setTimeout(()=>win.print(),600);
-    st('PDF ready — use Print → Save as PDF');
-  });
-}
+function exportPNG(){document.getElementById('export-sub').style.display='none';document.getElementById('export-toggle').textContent='📤 Export ▾';closeSheet('meta-ov');st('Generating PNG…');buildExportCanvas(c=>{const a=document.createElement('a');a.download=getName()+'_export.png';a.href=c.toDataURL('image/png');a.click();st('PNG exported!');});}
+function exportJPEG(){document.getElementById('export-sub').style.display='none';document.getElementById('export-toggle').textContent='📤 Export ▾';closeSheet('meta-ov');st('Generating JPEG…');buildExportCanvas(c=>{const a=document.createElement('a');a.download=getName()+'_export.jpg';a.href=c.toDataURL('image/jpeg',.95);a.click();st('JPEG exported!');});}
+function exportPDF(){document.getElementById('export-sub').style.display='none';document.getElementById('export-toggle').textContent='📤 Export ▾';closeSheet('meta-ov');st('Generating PDF…');buildExportCanvas(c=>{const win=window.open('','_blank');win.document.write(`<!DOCTYPE html><html><head><meta charset=&quot;UTF-8&quot;><title>CB Matrix</title><style>@page{size:A4 landscape;margin:0;}body{margin:0;}img{width:100%;height:auto;display:block;}</style></head><body><img src=&quot;${c.toDataURL('image/png')}&quot;></body></html>`);win.document.close();win.focus();setTimeout(()=>win.print(),600);st('PDF ready — use Print → Save as PDF');});}
 
 // Redraw on resize
 window.addEventListener('resize',()=>{rebuildUI();});
