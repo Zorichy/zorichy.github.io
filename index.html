@@ -2103,12 +2103,11 @@ function drawDesktopMatrix(ctx,scale){
       ctx.fillText(lbl+'.'+(i+1),ex+54,ey-2);
     });
   });
-  // PCB labels
+  // PCB labels (no row numbers in export)
   for(let i=0;i<N_LEG;i++){
     const ly=CT+leg_sp*(i+1),lbl=S.pcbLabels[i]||'';
     if(lbl){ctx.font='bold 13px &quot;Share Tech Mono&quot;,monospace';ctx.fillStyle='#111';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(lbl,LEG_DOT_X+16,ly);}
     ctx.strokeStyle='#ccc';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(LEG_DOT_X+16,ly+9);ctx.lineTo(LEG_DOT_X+104,ly+9);ctx.stroke();
-    ctx.font='11px &quot;Share Tech Mono&quot;,monospace';ctx.fillStyle='#aaa';ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText(i+1,LEG_DOT_X+14,ly);
   }
   // Routing
   const VSLOTS=6,gaps=[[SW_LEFT+2,sw_xs[0]-2],[sw_xs[0]+SW_W+2,sw_xs[1]-2],[sw_xs[1]+SW_W+2,sw_xs[2]-2],[sw_xs[2]+SW_W+2,SW_RIGHT-2]];
@@ -2159,10 +2158,10 @@ function drawDesktopMatrix(ctx,scale){
     ctx.beginPath();ctx.moveTo(mx,my-ds);ctx.lineTo(mx+ds,my);ctx.lineTo(mx,my+ds);ctx.lineTo(mx-ds,my);ctx.closePath();ctx.fill();ctx.stroke();
     ctx.fillStyle='#fff';ctx.font='bold 8px monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('!',mx,my);ctx.restore();
   });
-  // Dots
+  // Dots — pot pins use lowercase IDs (p1-1 etc) to match net storage
   const allDots=[];for(let i=0;i<9;i++)for(let p=1;p<=3;p++)allDots.push('sw'+(i+1)+'-'+p);
   for(let i=0;i<N_LEG;i++)allDots.push('pcb-'+i);
-  ['P1','P2'].forEach(pt=>[1,2,3].forEach(p=>allDots.push(pt+'-'+p)));
+  ['p1','p2'].forEach(pt=>[1,2,3].forEach(p=>allDots.push(pt+'-'+p)));
   allDots.forEach(id=>{
     const pos=nodePos(id),r=id.startsWith('pcb-')?7:6;
     const nets=Object.keys(S.nets).filter(k=>S.nets[k].dots.has(id));
