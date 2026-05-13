@@ -1565,9 +1565,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <div class=&quot;mf&quot;><div class=&quot;ml&quot;>Rev</div><input id=&quot;mr&quot; placeholder=&quot;v1&quot;></div>
     <div class=&quot;s-btn&quot; onclick=&quot;saveProject()&quot;>💾 Save JSON</div>
     <div class=&quot;s-btn&quot; onclick=&quot;document.getElementById('file-inp').click()&quot;>📂 Load JSON</div>
-    <div class=&quot;s-btn&quot; onclick=&quot;exportPDF()&quot;>📄 Export PDF</div>
-    <div class=&quot;s-btn&quot; onclick=&quot;exportPNG()&quot;>🖼 Export PNG</div>
-    <div class=&quot;s-btn&quot; onclick=&quot;exportJPEG()&quot;>📷 Export JPEG</div>
+    <div class=&quot;s-btn&quot; onclick=&quot;toggleExportSub()&quot; id=&quot;export-toggle&quot;>📤 Export ▾</div>
+    <div id=&quot;export-sub&quot; style=&quot;display:none;margin:0 14px;border:1px solid var(--border);border-radius:8px;overflow:hidden;&quot;>
+      <div class=&quot;s-btn&quot; style=&quot;margin:0;border:none;border-bottom:1px solid var(--border);border-radius:0;&quot; onclick=&quot;exportPDF()&quot;>📄 Export PDF</div>
+      <div class=&quot;s-btn&quot; style=&quot;margin:0;border:none;border-bottom:1px solid var(--border);border-radius:0;&quot; onclick=&quot;exportPNG()&quot;>🖼 Export PNG</div>
+      <div class=&quot;s-btn&quot; style=&quot;margin:0;border:none;border-radius:0;&quot; onclick=&quot;exportJPEG()&quot;>📷 Export JPEG</div>
+    </div>
     <div class=&quot;s-btn danger&quot; onclick=&quot;clearAll()&quot;>Clear All</div>
     <div class=&quot;s-btn&quot; onclick=&quot;closeSheet('meta-ov')&quot;>Close</div>
   </div>
@@ -2011,6 +2014,14 @@ function onLoad(e){
   rd.readAsText(f);e.target.value='';
 }
 
+function toggleExportSub(){
+  const sub=document.getElementById('export-sub');
+  const btn=document.getElementById('export-toggle');
+  const open=sub.style.display==='none';
+  sub.style.display=open?'block':'none';
+  btn.textContent=open?'📤 Export ▴':'📤 Export ▾';
+}
+
 // ═══════════════════ EXPORT ══════════════════════════════════════════
 // Same A4 canvas as desktop: title + matrix screenshot + notes inside
 const A4W=2338, A4H=1653;
@@ -2083,6 +2094,8 @@ function buildExportCanvas(cb){
 }
 
 function exportPNG(){
+  document.getElementById('export-sub').style.display='none';
+  document.getElementById('export-toggle').textContent='📤 Export ▾';
   closeSheet('meta-ov');
   st('Generating PNG…');
   buildExportCanvas(c=>{
@@ -2092,6 +2105,8 @@ function exportPNG(){
   });
 }
 function exportJPEG(){
+  document.getElementById('export-sub').style.display='none';
+  document.getElementById('export-toggle').textContent='📤 Export ▾';
   closeSheet('meta-ov');
   st('Generating JPEG…');
   buildExportCanvas(c=>{
@@ -2101,6 +2116,8 @@ function exportJPEG(){
   });
 }
 function exportPDF(){
+  document.getElementById('export-sub').style.display='none';
+  document.getElementById('export-toggle').textContent='📤 Export ▾';
   closeSheet('meta-ov');
   st('Generating PDF…');
   buildExportCanvas(c=>{
